@@ -1,0 +1,10 @@
+# IntelliJ project
+.idea/
+# Temporary MATLAB files
+*.m~
+# MBARI coefficient backups
+*.bak
+# Compressed archives
+*.zip
+# Excel Spreadsheets
+*.xlsx

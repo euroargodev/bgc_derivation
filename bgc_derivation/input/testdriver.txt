@@ -1,0 +1,10 @@
+%!DRIVER_TYPE=NETCDF
+
+# Radiometry
+{./input/raditest/BR2902754_001.nc ./input/raditest/R2902754_001.nc ./input/raditest/MR2902754_001.nc} ./input/raditest/2902754_meta.nc -rad -f radtest.mat
+
+# pH
+{./input/phtest/BD5904983_002.nc ./input/phtest/R5904983_002.nc} ./input/phtest/5904983_meta.nc -ph -f phtest.mat
+
+# Chlorophyll-a
+{./input/chlatest/BR5905397_002.nc ./input/chlatest/R5905397_002.nc ./input/chlatest/MR5905397_002.nc} ./input/chlatest/5905397_meta.nc -chla -f chlatest.mat

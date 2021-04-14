@@ -1,0 +1,13 @@
+%!DRIVER_TYPE=NETCDF
+# Example driver file
+#
+# Recommended formats:
+# {profile1.nc, profile2.nc, profileN.nc..} meta.nc -flag1 -flag2 -flagN..
+#
+# {profile1.nc profile2.nc profileN.nc..} meta.nc -flag1 -flag2 -flagN.. -f filename.mat 
+#
+# Do not include paths for output files as the aggregate output file will always be named 'output.mat' and will always be saved in the current directory!
+#
+{/login/matcaz/argocalc/input/raditest/BR2902754_001.nc /login/matcaz/argocalc/input/raditest/R2902754_001.nc} /login/matcaz/argocalc/input/raditest/2902754_meta.nc -rad -f filename.mat
+{/login/matcaz/argocalc/input/raditest/BR2902754_002.nc /login/matcaz/argocalc/input/raditest/R2902754_002.nc} /login/matcaz/argocalc/input/raditest/2902754_meta.nc -rad -f filename.mat
+{/login/matcaz/argocalc/input/raditest/BR2902754_003.nc /login/matcaz/argocalc/input/raditest/R2902754_003.nc} /login/matcaz/argocalc/input/raditest/2902754_meta.nc -rad -f filename.mat
