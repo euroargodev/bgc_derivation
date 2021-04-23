@@ -7,15 +7,14 @@ function bgcout = bgcproc(varargin)
 %    metain     is a path to a meta NetCDF file
 %    -f         is an argument for if you want to output to a .mat file
 %    filout     is the path to the .mat file you want to create
-%    -ph        is an argument for if you want to process pH data
-%    -rad       is an argument for if you want to process radiometry data
-%    -chla      is an argument for if you want to process chlorophyll-a
-%               data
-%    -bbs       is an argument for if you want to process backscattering
-%               data
-%    -oxy       is an argument for if you want to process oxygen data (NOT
+%    -ph        is flag to enable pH processing
+%    -rad       is a flag to enable radiometry processing
+%    -chla      is a flag to enable chlorophyll-a processing
+%    -bbs       is a flag to enable backscatter processing
+%    -oxy       is a flag to enable oxygen processing (NOT
 %               IMPLEMENTED)
-%    -nit       is an argument for if you want to process nitrate data
+%    -nit       is a flag to enable nitrate processing
+%    -cdom      is a flag to enable CDOM processing
 %
 
 % title - s argoproc vr - 1.0 author - bodc/matcaz date - 24012019
@@ -62,6 +61,7 @@ procchla = false;
 procbbs = false;
 procoxy = false;
 procnit = false;
+proccdom = true;
 
 procany = false;
 for ii=1:length(varargin)
@@ -87,6 +87,8 @@ for ii=1:length(varargin)
             procoxy = true;
         case '-nit'
             procnit = true;
+        case '-cdom'
+            proccdom = true;
         otherwise
             error('Unrecognized flag!');
     end
@@ -156,6 +158,11 @@ end
 % Process nitrate as necessary
 if (procnit)
     bgcout.nit = nitproc(profvarnams, profvarids, profids, coefs);
+end
+
+% Process CDOm as necessary
+if (proccdom)
+    bgcout.cdom = cdomproc(profvarnams, profvarids, profids, coefs);
 end
 
 if(~isempty(outpth))
