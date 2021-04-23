@@ -1,6 +1,6 @@
 function nitrate = nitproc(profvarnams, profvarids, profids, coefs)
 
-    addpath("seawater_ver3_2");  % TODO This should be a submodule
+    
 
     nc = profids(1);
     core_nc = profids(2);

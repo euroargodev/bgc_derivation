@@ -1,4 +1,6 @@
 function nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate_temp, e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate, a, b, c, d)
+    addpath("submodules/gibbs_seawater/Toolbox");
+
     fit_e_nitrate = e_nitrate(fit);
     fit_wavelength = optical_wavelength_uv(fit);
     
@@ -29,6 +31,6 @@ function nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate
     end
     
     % Eq. 6 - Convert molar nitrate to nitrate
-    rho = sw_pden(psal, temp, pres, 0);
+    rho = gsw_rho(psal, temp, pres);
     nitrate = molar_nitrate ./ (rho / 1000);
 end
