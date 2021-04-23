@@ -30,5 +30,5 @@ function nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate
     
     % Eq. 6 - Convert molar nitrate to nitrate
     rho = sw_pden(psal, temp, pres, 0);
-    nitrate = molar_nitrate ./ rho;
+    nitrate = molar_nitrate ./ (rho / 1000);
 end
