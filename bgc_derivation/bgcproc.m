@@ -158,6 +158,7 @@ if (procnit)
     bgcout.nit = nitproc(profvarnams, profvarids, profids, coefs);
 end
 
+% Save to an output file if required
 if(~isempty(outpth))
     save(outpth,'bgcout');
 end
