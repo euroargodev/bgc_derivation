@@ -89,10 +89,6 @@ function nitrate = nitproc(profvarnams, profvarids, profids, coefs)
     % Size of temperature is checked earlier as we have essentially forced the same size here
     
     % Get required coefficient values
-    a = coefs.A;
-    b = coefs.B;
-    c = coefs.C;
-    d = coefs.D;
     temp_cal_nitrate = coefs.TEMP_CAL_NITRATE;
     optical_wavelength_uv = [coefs.OPTICAL_WAVELENGTH_UV{:}];
     optical_wavelength_offset = coefs.OPTICAL_WAVELENGTH_OFFSET;
@@ -102,5 +98,5 @@ function nitrate = nitproc(profvarnams, profvarids, profids, coefs)
     fit = 1:coefs.PIXEL_FIT_END - coefs.PIXEL_FIT_START + 1;
     
     % Calculate nitrate
-    nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate_temp, e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate, a, b, c, d);
+    nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate_temp, e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate);
 end

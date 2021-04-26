@@ -1,5 +1,9 @@
-function nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate_temp, e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate, a, b, c, d)
+function nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate_temp, e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate)
     addpath("submodules/gibbs_seawater/Toolbox");
+    a = 1.1500;
+    b = 0.0284;
+    c = -0.3101;
+    d = 0.0012;
 
     fit_e_nitrate = e_nitrate(fit);
     fit_wavelength = optical_wavelength_uv(fit);
