@@ -40,15 +40,15 @@ function nitrate = nitproc(profvarnams, profvarids, profids, coefs)
                 case 'PSAL'
                     psal_id = varids(jj);
                     psal = netcdf.getVar(profids(ii), psal_id);
-                    % (Unused) [~, psal_fill] = netcdf.inqVarFill(core_profids(ii), psal_id);
+                    [~, psal_fill] = netcdf.inqVarFill(profids(ii), psal_id);
                 case 'PRES'
                     pres_id = varids(jj);
                     pres = netcdf.getVar(profids(ii), pres_id);
-                    % (Unused) [~, pres_fill] = netcdf.inqVarFill(core_profids(ii), pres_id);
+                    [~, pres_fill] = netcdf.inqVarFill(profids(ii), pres_id);
                 case 'TEMP'
                     temp_id = varids(jj);
                     temp = netcdf.getVar(profids(ii), temp_id);
-                    % (Unused) [~, temp_fill] = netcdf.inqVarFill(core_profids(ii), temp_id);
+                    [~, temp_fill] = netcdf.inqVarFill(profids(ii), temp_id);
             end
         end
     end
@@ -58,29 +58,30 @@ function nitrate = nitproc(profvarnams, profvarids, profids, coefs)
         error('Nitrate variables are missing from provided NetCDF file!');
     end
 
-    % Treat each pixel as a unique array
-    [uv_x, ~, ~] = size(nitrate_uv);
-    uv_pixels = {};
-    for pixel=1:uv_x
-        pixel_range = nitrate_uv(pixel, :, :);
-        % Discard fill value cycles
-        uv_pixels{pixel} = pixel_range(pixel_range ~= nitrate_uv_fill);
+    % Identify the relevant profile to get data from
+    profile = any(nc_nitrate ~= nitrate_fill);
+    if ~profile
+        error('No nitrate data was found!');
     end
-    % Drop all but the relevant salinity values
-    psal = psal(pixel_range ~= nitrate_uv_fill);
-    pres = pres(pixel_range ~= nitrate_uv_fill);
-    temp = temp(pixel_range ~= nitrate_uv_fill);
-    
-    % Discard fill value cycles from simple variables
-    nitrate_temp = nitrate_temp(nc_nitrate ~= nitrate_fill);
-    if any(nitrate_temp == nitrate_temp_fill)
-        error('Unexpected fill values in filtered Nitrate temperatures!');
-    end
-    nc_nitrate = nc_nitrate(nc_nitrate ~= nitrate_fill);
-    nitrate_uv_dark = nitrate_uv_dark(nitrate_uv_dark ~= nitrate_uv_dark_fill);
+    psal = psal(:, profile);
+    pres = pres(:, profile);
+    temp = temp(:, profile);
+    nitrate_temp = nitrate_temp(:, profile);
+    nc_nitrate = nc_nitrate(:, profile);
+    nitrate_uv = nitrate_uv(:, :, profile)';
+    nitrate_uv_dark = nitrate_uv_dark(:, profile);
+
+    % Mask out fill values
+    psal(psal == psal_fill) = nan;
+    pres(pres == pres_fill) = nan;
+    temp(temp == temp_fill) = nan;
+    nitrate_temp(nitrate_temp == nitrate_temp_fill) = nan;
+    nc_nitrate(nc_nitrate == nitrate_fill) = nan;
+    nitrate_uv(nitrate_uv == nitrate_uv_fill) = nan;
+    nitrate_uv_dark(nitrate_uv_dark == nitrate_uv_dark_fill) = nan;
     
     % Check our nitrate variables are the right size
-    if size(nc_nitrate) ~= size(uv_pixels{1})
+    if length(nc_nitrate) ~= length(nitrate_uv)
         error('Nitrate UV has size mismatch with Nitrate!');
     end
     if size(nc_nitrate) ~= size(nitrate_uv_dark)
@@ -98,5 +99,5 @@ function nitrate = nitproc(profvarnams, profvarids, profids, coefs)
     fit = 1:coefs.PIXEL_FIT_END - coefs.PIXEL_FIT_START + 1;
     
     % Calculate nitrate
-    nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate_temp, e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate);
+    nitrate = nitcalc(pres, temp, psal, nitrate_uv, nitrate_uv_dark, nitrate_temp, e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate);
 end

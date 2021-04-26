@@ -1,4 +1,4 @@
-function nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate_temp, e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate)
+function nitrate = nitcalc(pres, temp, psal, nitrate_uv, nitrate_uv_dark, nitrate_temp, e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate)
     addpath("submodules/gibbs_seawater/Toolbox");
     a = 1.1500;
     b = 0.0284;
@@ -10,7 +10,7 @@ function nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate
     
 
     % Eq. 1 - Calculate seawater spectrum
-    absorbance_sw = -log10(([uv_pixels{:}] - nitrate_uv_dark) ./ nitrate_uv_ref);
+    absorbance_sw = -log10((nitrate_uv - nitrate_uv_dark) ./ nitrate_uv_ref);
     
     % Eq. 2 & 3 - Calculate bromide and sea salt spectrum
     f_sw = (a + b .* nitrate_temp) .* exp((c + d .* nitrate_temp) .* (optical_wavelength_uv - optical_wavelength_offset));
@@ -25,16 +25,18 @@ function nitrate = nitcalc(pres, temp, psal, uv_pixels, nitrate_uv_dark, nitrate
     m = [fit_e_nitrate; ones(size(fit_e_nitrate)); fit_wavelength];
     m_inv = pinv(m);
     
-    molar_nitrate = [];
-    intercept = [];
-    slope = [];
+    dimensions = size(nitrate_uv_dark');
+    molar_nitrate = nan(dimensions);
+    intercept = nan(dimensions);
+    slope = nan(dimensions);
+
     for ii=1:length(nitrate_uv_dark)
-        molar_nitrate(ii, :) = m_inv(:, 1)' * fit_abs_cor(ii, :)';
-        intercept(ii, :) = m_inv(:, 2)' * fit_abs_cor(ii, :)';
-        slope(ii, :) = m_inv(:, 3)' * fit_abs_cor(ii, :)';
+        molar_nitrate(ii) = m_inv(:, 1)' * fit_abs_cor(ii, :)';
+        intercept(ii) = m_inv(:, 2)' * fit_abs_cor(ii, :)';
+        slope(ii) = m_inv(:, 3)' * fit_abs_cor(ii, :)';
     end
     
     % Eq. 6 - Convert molar nitrate to nitrate
     rho = gsw_rho(psal, temp, pres);
-    nitrate = molar_nitrate ./ (rho / 1000);
+    nitrate = molar_nitrate' ./ (rho / 1000);
 end
