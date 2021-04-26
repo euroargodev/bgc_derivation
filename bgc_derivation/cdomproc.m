@@ -7,7 +7,7 @@ function cdom = cdomproc(profvarnams, profvarids, profids, coefs)
     ncid = profids(1);
     
     % Get data from profile NetCDF
-    fluorescence_cdom_id = varids(strcmp(varnams, 'FLUORESCENCE_CHLA'));
+    fluorescence_cdom_id = varids(strcmp(varnams, 'FLUORESCENCE_CDOM'));
     fluorescence_cdom = netcdf.getVar(ncid, fluorescence_cdom_id);
     [~, fluorescence_cdom_fill] = netcdf.inqVarFill(ncid, fluorescence_cdom_id);
     % Discard fill values
