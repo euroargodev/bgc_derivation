@@ -1,21 +1,20 @@
 function bgcout = bgcproc(varargin)
 %
 %    output = bgcproc([profin, metain], [,-f, filout],
-%       [-ph, -rad, -chla, -bbs])
+%       [-ph, -rad, -chla, -bbp])
 %  where
 %    profin     is a cell array of paths to profile NetCDF files
 %    metain     is a path to a meta NetCDF file
 %    -f         is an argument for if you want to output to a .mat file
 %    filout     is the path to the .mat file you want to create
-%    -ph        is an argument for if you want to process pH data
-%    -rad       is an argument for if you want to process radiometry data
-%    -chla      is an argument for if you want to process chlorophyll-a
-%               data
-%    -bbs       is an argument for if you want to process backscattering
-%               data
-%    -oxy       is an argument for if you want to process oxygen data (NOT
+%    -ph        is flag to enable pH processing
+%    -rad       is a flag to enable radiometry processing
+%    -chla      is a flag to enable chlorophyll-a processing
+%    -bbp       is a flag to enable backscatter processing
+%    -oxy       is a flag to enable oxygen processing (NOT
 %               IMPLEMENTED)
-%    -nit       is an argument for if you want to process nitrate data
+%    -nit       is a flag to enable nitrate processing
+%    -cdom      is a flag to enable CDOM processing
 %
 
 % title - s argoproc vr - 1.0 author - bodc/matcaz date - 24012019
@@ -59,9 +58,10 @@ end
 procph = false;
 procrad = false;
 procchla = false;
-procbbs = false;
+procbbp = false;
 procoxy = false;
 procnit = false;
+proccdom = true;
 
 procany = false;
 for ii=1:length(varargin)
@@ -81,12 +81,14 @@ for ii=1:length(varargin)
             procrad = true;
         case '-chla'
             procchla = true;
-        case '-bbs'
-            procbbs = true;
+        case '-bbp'
+            procbbp = true;
         case '-oxy'
             procoxy = true;
         case '-nit'
             procnit = true;
+        case '-cdom'
+            proccdom = true;
         otherwise
             error('Unrecognized flag!');
     end
@@ -143,8 +145,8 @@ if (procchla)
 end
 
 % Process backscattering as necessary
-if (procbbs)
-    bgcout.bbs = bbsproc(profvarnams,profvarids,profids,...
+if (procbbp)
+    bgcout.bbs = bbpproc(profvarnams,profvarids,profids,...
         metaid,metavarnams,metavarids,coefs);
 end
 
@@ -156,6 +158,11 @@ end
 % Process nitrate as necessary
 if (procnit)
     bgcout.nit = nitproc(profvarnams, profvarids, profids, coefs);
+end
+
+% Process CDOM as necessary
+if (proccdom)
+    bgcout.cdom = cdomproc(profvarnams, profvarids, profids, coefs);
 end
 
 % Save to an output file if required
