@@ -1,7 +1,7 @@
 function bgcout = bgcproc(varargin)
 %
 %    output = bgcproc([profin, metain], [,-f, filout],
-%       [-ph, -rad, -chla, -bbs])
+%       [-ph, -rad, -chla, -bbp])
 %  where
 %    profin     is a cell array of paths to profile NetCDF files
 %    metain     is a path to a meta NetCDF file
@@ -10,7 +10,7 @@ function bgcout = bgcproc(varargin)
 %    -ph        is flag to enable pH processing
 %    -rad       is a flag to enable radiometry processing
 %    -chla      is a flag to enable chlorophyll-a processing
-%    -bbs       is a flag to enable backscatter processing
+%    -bbp       is a flag to enable backscatter processing
 %    -oxy       is a flag to enable oxygen processing (NOT
 %               IMPLEMENTED)
 %    -nit       is a flag to enable nitrate processing
@@ -58,7 +58,7 @@ end
 procph = false;
 procrad = false;
 procchla = false;
-procbbs = false;
+procbbp = false;
 procoxy = false;
 procnit = false;
 proccdom = true;
@@ -81,8 +81,8 @@ for ii=1:length(varargin)
             procrad = true;
         case '-chla'
             procchla = true;
-        case '-bbs'
-            procbbs = true;
+        case '-bbp'
+            procbbp = true;
         case '-oxy'
             procoxy = true;
         case '-nit'
@@ -145,8 +145,8 @@ if (procchla)
 end
 
 % Process backscattering as necessary
-if (procbbs)
-    bgcout.bbs = bbsproc(profvarnams,profvarids,profids,...
+if (procbbp)
+    bgcout.bbs = bbpproc(profvarnams,profvarids,profids,...
         metaid,metavarnams,metavarids,coefs);
 end
 
