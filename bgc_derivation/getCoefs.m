@@ -124,6 +124,10 @@ else
         coefcell{BETASW700} = ['BETASW700=',...
             coefcell{BETASW700}(52:end)];
     end
+    % Recover anything caught up in the BETASW cell
+    leftover = coefcell{BETASW700}(strfind(coefcell{BETASW700}, 'angularDeg') + 10:end);
+    coefcell{BETASW700} = replace(coefcell{BETASW700}, leftover, '');
+    coefcell{end+1} = leftover;
     
     adjusted_coefs = {};
     bracket = false;

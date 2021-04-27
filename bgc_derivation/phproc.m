@@ -8,9 +8,6 @@ function phvars = phproc(profvarnams,profvarids,profids,coefs)
 %    profvarids     is a cell array containing vectors of profile NetCDF
 %                   variable IDs
 %    profids        is a vector of profile NetCDF file IDs (ncids)
-%    metaid         is a NetCDF file id (ncid) for the relevant meta file
-%    metavarnams    is a cell array containing meta NetCDF variable names
-%    metavarids     is a vector of meta NetCDF variable IDs
 %    coefs          is a key-value pair structure containing metadata from a 
 %                   PREDEPLOYMENT_CALIB_COEFFICIENT string
 %    phvars         is a key-value pair structure of processed results
