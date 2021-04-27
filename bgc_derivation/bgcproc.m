@@ -61,7 +61,7 @@ procchla = false;
 procbbp = false;
 procoxy = false;
 procnit = false;
-proccdom = true;
+proccdom = false;
 
 procany = false;
 for ii=1:length(varargin)
