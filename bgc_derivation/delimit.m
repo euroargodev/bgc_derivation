@@ -1,4 +1,4 @@
-function cellout = delimit(str,delimiter)
+function cellout = delimit(str,delimiters)
 %
 %    cellout = delimit(str,delimiter)
 %  where
@@ -10,8 +10,12 @@ function cellout = delimit(str,delimiter)
 %
 % mods - 
 %
-
-    steps = strfind(str,delimiter); % Indexes of delimiters in string
+    
+    steps = {};
+    for ii=1:length(delimiters)
+        steps{end+1} = strfind(str, delimiters{ii});
+    end
+    steps = sort([steps{:}]);
     cellout = cell(length(steps)-1,1); % Output cell array
     last = 1;
     for ii=1:length(steps)

@@ -2,6 +2,7 @@
 .idea/
 # Temporary MATLAB files
 *.m~
+*.asv
 # MBARI coefficient backups
 *.bak
 # Compressed archives

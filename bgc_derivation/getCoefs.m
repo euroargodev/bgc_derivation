@@ -33,18 +33,16 @@ for ii = 1:length(nones)
 end
 
 % Attempt to identify delimiter
-delimiters = {';',','};
-delimiter = ' ';
-peak = 0;
-for ii = 1:length(delimiters)
-    ndelimit = length(strfind(coefstring,delimiters{ii}));
-    if (ndelimit > peak)
-        delimiter = delimiters{ii};
-        peak = ndelimit;
+all_delimiters = {';',','};
+delimiters = {};
+for ii = 1:length(all_delimiters)
+    ndelimit = length(strfind(coefstring,all_delimiters{ii}));
+    if (ndelimit > 0)
+        delimiters{end+1} = all_delimiters{ii};
     end
 end
 
-if (peak < 1)
+if (isempty(delimiters))
     disp('Could not identify delimiter in coefficient string, attempting to parse with whitespace...');
     coefstring = transpose(fullstring); % Revert to whitespace-filled string
     sz = size(coefstring);
@@ -96,23 +94,77 @@ if (peak < 1)
     end
 else
     % Apply delimiter
-    coefcell = delimit(coefstring,delimiter);
+    coefcell = delimit(coefstring,delimiters);
 
+    % Handle known names with following parantheses
+    names = {...
+        'UV_INTENSITY_REF_NITRATE(Ntrans)', ...
+        'E_SWA_NITRATE(Ntrans)', ...
+        'OPTICAL_WAVELENGTH_UV(Ntrans)', ...
+        'E_NITRATE(Ntrans)'...
+    };
+    for ii=1:length(names)
+        name = names{ii};
+        parenthesis = strfind(name, '(');
+        replacement = name(1:parenthesis-1);
+        
+        instance = contains(coefcell, name);
+        if (any(instance))
+            coefcell{instance} = [replacement, ...
+                coefcell{instance}(length(name)+1:end)];
+        end
+
+    end
+    
     % Account for special cases
+    % BETASW700 (Contribution of Pure Sea Water)
     BETASW700Search = 'BETASW700(contributionofpureseawater)';
-    BETASW700 = ~cellfun('isempty',strfind(coefcell,BETASW700Search));
+    BETASW700 = contains(coefcell,BETASW700Search);
     if (any(BETASW700))
         coefcell{BETASW700} = ['BETASW700=',...
             coefcell{BETASW700}(52:end)];
     end
+    
+    adjusted_coefs = {};
+    bracket = false;
+    previous = '';
+    for ii=1:length(coefcell)
+        coef = coefcell{ii};
+        if bracket && contains(coef, '[')
+            error('Coefficient opens a square bracket without closing the previous one!');
+        elseif bracket && contains(coef, ']')
+            adjusted_coefs{end+1} = [previous, ',', coef];
+            bracket = false;
+            previous = '';
+        elseif contains(coef, '[')
+            bracket = true;
+            previous = coef;
+        elseif bracket
+            previous = [previous, ',', coef];
+        else
+            adjusted_coefs{end+1} = coef;
+        end
+    end
 
     % Generate struct
-    eqmask = ~cellfun('isempty',strfind(coefcell,'='));
-    coefeq = coefcell(eqmask);
+    eqmask = contains(adjusted_coefs, '=');
+    coefeq = adjusted_coefs(eqmask);
 
     for ii=1:length(coefeq) % Inefficient :(
         [key, val] = strtok(coefeq{ii},'=');
         val = val(2:end);
+        if strcmp(val(1), '[') && strcmp(val(end), ']')  % Array of values
+            coefs.(key) = {};
+            values = split(val(2:end-1), ',');
+            for jj=1:length(values)
+                if strisnumeric(values{jj})
+                    values{jj} = str2double(values{jj});
+                end
+                coefs.(key){end+1} = values{jj};
+            end
+            continue
+        end
+            
         if strisnumeric(val)
             val = str2double(val);
         end

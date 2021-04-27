@@ -15,8 +15,7 @@ function bgcout = bgcproc(varargin)
 %               data
 %    -oxy       is an argument for if you want to process oxygen data (NOT
 %               IMPLEMENTED)
-%    -nit       is an argument for if you want to process nitrate data (NOT
-%               IMPLEMENTED)
+%    -nit       is an argument for if you want to process nitrate data
 %
 
 % title - s argoproc vr - 1.0 author - bodc/matcaz date - 24012019
@@ -156,9 +155,10 @@ end
 
 % Process nitrate as necessary
 if (procnit)
-    bgcout.nit = nitproc();
+    bgcout.nit = nitproc(profvarnams, profvarids, profids, coefs);
 end
 
+% Save to an output file if required
 if(~isempty(outpth))
     save(outpth,'bgcout');
 end
