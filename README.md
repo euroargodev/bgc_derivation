@@ -154,6 +154,6 @@ Where:
 - -cdom is an optional flag to enable CDOM processing.
 
 #### Seawater Toolkit Submodule
-Note that this function includes an addpath to the gibbs_seawater toolbox submodule, so that [submodule should be cloned](https://git-scm.com/book/en/v2/Git-Tools-Submodules#_cloning_submodules) before this function is used.
+Note that this function includes an addpath to the Gibbs-SeaWater toolbox submodule, so that [submodule should be cloned](https://git-scm.com/book/en/v2/Git-Tools-Submodules#_cloning_submodules) before this function is used.
 
 Currently, the toolbox is only required for nitrate calculation, but will be required for oxygen in future.
