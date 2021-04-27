@@ -54,7 +54,7 @@ The chlacalc function is invoked as:
 chla = chlacalc(raw, dark, scale)
 ```
 Where:
-- raw is (TODO)
+- raw is the raw counts, i.e. from FLUORESCENCE_CHLA
 - dark is the manufacturer dark count or the pre-deployment operator dark count
 - scale is the scale factor from the instrument manufacturer characterisation
 
