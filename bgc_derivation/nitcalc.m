@@ -1,12 +1,13 @@
 function nitrate = nitcalc(...
     pres, temp, psal,...  % Profile variables
     nitrate_uv, nitrate_uv_dark, nitrate_temp,...  % B-profile variables
-    e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate...  % Coefficients
-)
+    e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate,...  % Coefficients
+    eq7)  % Enable use of equation 7
 %
 %    nitrate = nitcalc(pres, temp, psal, nitrate_uv, nitrate_uv_dark,
 %    nitrate_temp, e_nitrate, e_swa_nitrate, optical_wavelength_uv,
-%    nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate)
+%    nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate,
+%    [eq7])
 %  where
 %    pres                  is a vector of pressure values
 %    temp                  is a vector of temperature values
@@ -22,12 +23,19 @@ function nitrate = nitcalc(...
 %    fit                   is a vector of pixel numbers/wavelengths to
 %                          restrict calculations to
 %    temp_cal_nitrate      is the TEMP_CAL_NITRATE coefficient value
+%    eq7                   is an optional boolean to enable compensation for the pressure effect
 
-% title - s nitcalc vr - 1.0 author - bodc/matcaz date - 2021-04-26
+% title - s nitcalc vr - 1.1 author - bodc/matcaz date - 2021-04-26
 %
-% mods -
+% mods - 1.1 Add support for pressure effect compensation, move seawater
+%            toolbox addpath to bgcproc (matcaz2021-04-27)
 %
-addpath("submodules/gibbs_seawater/Toolbox");
+
+
+if ~exist('eq7', 'var')
+    eq7 = false;
+end
+
 a = 1.1500276;
 b = 0.0284;
 c = -0.3101349;
@@ -49,8 +57,14 @@ f_cal = (a + b .* temp_cal_nitrate)...
 
 e_swa_insitu = e_swa_nitrate .* f_sw ./ f_cal;
 
-% Eq. 4 - Calculate absorbance of nitrate
-absorbance_cor_nitrate = absorbance_sw - e_swa_insitu .* psal;
+if eq7
+    % Eq. 7 Calculate absorbance of nitrate, compensating for the pressure effect
+    absorbance_cor_nitrate = absorbance_sw - (e_swa_insitu .* psal) .* (1 - (0.026 * pres / 1000));
+else
+    % Eq. 4 - Calculate absorbance of nitrate
+    absorbance_cor_nitrate = absorbance_sw - e_swa_insitu .* psal;
+end
+
 
 % Eq. 5 - Calculate molar nitrate
 fit_abs_cor = absorbance_cor_nitrate(:, fit);

@@ -117,6 +117,6 @@ fit = 1:coefs.PIXEL_FIT_END - coefs.PIXEL_FIT_START + 1;
 nitrate = nitcalc(...
     pres, temp, psal,...  % Profile variables
     nitrate_uv, nitrate_uv_dark, nitrate_temp,...  % B-profile variables
-    e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate...  % Coefficients
-);
+    e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate,...  % Coefficients
+    true);  % Enable use of equation 7
 end
