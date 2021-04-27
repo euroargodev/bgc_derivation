@@ -21,6 +21,18 @@ http://www.argodatamgt.org/Documentation
 
 # How to use it
 Broadly speaking, the code for different equations can be used in much the same way. Each (implemented) equation has a corresponding "calc" and "proc" .m file that can be used.
+
+## Submodules
+Note that this repo makes use of a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to include the Gibbs-SeaWater Toolkit. In order to have access to this submodule, use the relevant argument while cloning:
+```shell
+git clone --recurse-submodules https://github.com/euroargodev/bgc_derivation.git
+```
+Or use the git submodule commands to pull the submodule after cloning:
+```shell
+git submodule init
+git submodule update
+```
+
 ## Calc files
 Calc code represents the equation and calculation work itself, taking a number of arguments that are up to the user to provide from whatever form they have available. Provided you have the relevant parameters available, you can use a calc function directly to generate some output.
 ### pH - phcalc.m
@@ -79,7 +91,8 @@ The nitcalc function is invoked as:
 nitrate = nitcalc(...
     pres, temp, psal,...  % Profile variables
     nitrate_uv, nitrate_uv_dark, nitrate_temp,...  % B-profile variables
-    e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate...  % Coefficients
+    e_nitrate, e_swa_nitrate, optical_wavelength_uv, nitrate_uv_ref, optical_wavelength_offset, fit, temp_cal_nitrate,...  % Coefficients
+    eq7
 )
 ```
 Where:
@@ -93,8 +106,9 @@ Where:
 - optical_wavelength_uv is the OPTICAL_WAVELENGTH_UV coefficient values
 - fit is the range of pixel numbers/wavelengths to restrict calculations to
 - temp_cal_nitrate is the TEMP_CAL_NITRATE coefficient value
+- eq7 is an optional boolean to enable compensation for the pressure effect - note that this is enabled by default when using nitproc or bgcproc!
 
-Note that this function includes an addpath to the gibbs_seawater toolbox submodule, so that [submodule **must** be cloned](https://git-scm.com/book/en/v2/Git-Tools-Submodules) before this function can be used. 
+Note that this function makes use of the gibbs_seawater toolbox, so an addpath must be set before this function can be used outside of bgcproc.
 
 ### CDOM - cdomcalc.m
 The cdomcalc function is invoked as:
@@ -138,3 +152,8 @@ Where:
 - -bbs is an optional flag to enable backscatter processing.
 - -nit is an optional flag to enable nitrate processing.
 - -cdom is an optional flag to enable CDOM processing.
+
+#### Seawater Toolkit Submodule
+Note that this function includes an addpath to the gibbs_seawater toolbox submodule, so that [submodule should be cloned](https://git-scm.com/book/en/v2/Git-Tools-Submodules#_cloning_submodules) before this function is used.
+
+Currently, the toolbox is only required for nitrate calculation, but will be required for oxygen in future.

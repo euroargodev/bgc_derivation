@@ -17,10 +17,12 @@ function bgcout = bgcproc(varargin)
 %    -cdom      is a flag to enable CDOM processing
 %
 
-% title - s argoproc vr - 1.0 author - bodc/matcaz date - 24012019
+% title - s argoproc vr - 1.1 author - bodc/matcaz date - 24012019
 %
-% mods - 
+% mods - 1.1 Include addpath to seawater toolbox submodule (matcaz20210427)
 %
+
+addpath("submodules/gibbs_seawater/Toolbox");
 
 bgcout = struct();
 
