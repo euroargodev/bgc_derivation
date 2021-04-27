@@ -94,6 +94,8 @@ Where:
 - fit is the range of pixel numbers/wavelengths to restrict calculations to
 - temp_cal_nitrate is the TEMP_CAL_NITRATE coefficient value
 
+Note that this function includes an addpath to the gibbs_seawater toolbox submodule, so that [submodule **must** be cloned](https://git-scm.com/book/en/v2/Git-Tools-Submodules) before this function can be used. 
+
 ### CDOM - cdomcalc.m
 The cdomcalc function is invoked as:
 ```matlab
