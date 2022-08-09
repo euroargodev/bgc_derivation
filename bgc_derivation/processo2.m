@@ -96,7 +96,7 @@ function processo2(floatnos)
         case '202_204_305'
         case '202_205_304'
         otherwise
-          error('Unknown equation designator: %s')
+          error('Unknown equation designator: %s',equid{ii});
       end
       close(ncctd);
       close(ncdox);
