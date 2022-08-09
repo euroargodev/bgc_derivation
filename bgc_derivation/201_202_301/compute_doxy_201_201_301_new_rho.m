@@ -20,6 +20,7 @@ function doxy=compute_doxy_201_201_301_new_rho(molar_doxy,pres,temp,psal,lat,lon
 ref_pres=0;
 % compute potential density
 rho=potential_density_gsw(pres,temp,psal,ref_pres,lat,lon);
+rho=rho/1000;
 
 % compute doxy [umol/kg]
 oxy=molar_doxy.*salcorrcalc(psal,temp).*prescorrcalc(pres,temp);
