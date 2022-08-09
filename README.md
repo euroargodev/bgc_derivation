@@ -7,7 +7,7 @@ This project will initially collate and develop the code for a complete set of d
  - dissolved oxygen
  - pH
  - irradiance
- - chlorophyll fluorescense
+ - chlorophyll fluorescence
  - particle backscatter
  - coloured dissolved organic matter (CDOM)
 
