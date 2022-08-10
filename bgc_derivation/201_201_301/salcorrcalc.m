@@ -12,6 +12,8 @@
 %
 % title - salcorrcalc vr - 1.0  author - bodc/qtl date - 20220808
 
+%         salcorrcalc vr - 1.0  bodc/vidkri date - 20220810- Changed the equation for the case id 201_202_202
+
 function salcorr=salcorrcalc(psal,temp,sref,spreset)
 
 % defaults for sfref and spreset
@@ -31,7 +33,7 @@ D3=-5.44e-4;
 
 % Salinity compensation correction
 ts = log((298.15-temp)./(273.15+temp));
-salcorr=A(temp,psal,spreset).*exp(((psal-sref).*(B0+(B1.*ts)+(B2.*ts.^2)+(B3.*ts.^3)))+(C0.*(psal.^2 -sref.^2)));
+salcorr=A(temp,psal,spreset).*exp(((psal).*(B0+(B1.*ts)+(B2.*ts.^2)+(B3.*ts.^3)))+(C0.*(psal.^2 )));
 
   % Inner function to calculate coefficent A
   function a=A(temp,psal,spreset)
