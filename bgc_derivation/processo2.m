@@ -83,6 +83,7 @@ function processo2(floatnos)
           molar_doxy  =  ncdox{'MOLAR_DOXY'}(:)';
           maskdoxy  =  molar_doxy  ==  99999;  %  More properly this should be the fill value
           maskctd  =  S == 99999;              %  as defined in the .nc file
+
           mask  =  ~(maskdoxy | maskctd);
 
           doxycalc  =  molar_doxy;             % Get right dimensions
@@ -101,8 +102,3 @@ function processo2(floatnos)
       close(ncctd);
       close(ncdox);
     end
-          
-          
-    
-      
-      
