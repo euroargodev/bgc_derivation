@@ -14,12 +14,12 @@
 % title - compute_doxy_201_202_202 vr - 1.0 author - bodc/vidkri date - 20220811
 
 function doxy=compute_doxy_201_202_202(bphase,rphase,pres,temp,psal)
-%compute the phase diff
-if ~(rphase)
+%compute the rphase
+if isempty(rphase), rphase =0; end
+
+%calculate the phase diff
  dphase = bphase - rphase
-else
- dphase= bphase
-end
+
 % compute potential temperature and potential density
 tpot=tetai(pres,temp,psal,0);
 [null,sigma0]=swstat90(psal,tpot,0);
@@ -27,7 +27,6 @@ rho=(sigma0+1000)/1000;
 
 %compute the molar_doxy
 molar_doxy=calcmolar_doxy_aanderaa3830(dphase,pres,temp)
-
 % compute doxy [umol/kg]
 oxy=molar_doxy.*salcorrcalc(psal,temp).*prescorrcalc(pres,temp);
 doxy=oxy./rho';
