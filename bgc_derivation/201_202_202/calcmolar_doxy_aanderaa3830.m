@@ -15,10 +15,10 @@ function [molarDoxy] = calcmolar_doxy_aanderaa3830( ...
 pCoef1=0.1;
 
 %Phase coeff obtained from 9.2.1.1 of DAC Cookbook (https://archimer.ifremer.fr/doc/00287/39795/94062.pdf)
-PCoef0=1.36355;
-PCoef1=1.12308;
-PCoef2=0.00000;
-PCoef3=0.00000;
+PCoef0=1.36355e00;
+PCoef1=1.12308e00;
+PCoef2=0.00000e00;
+PCoef3=0.00000e00;
 
 %Coeff to calculate molar doxy obtained from 9.2.1.1 of DAC Cookbook (https://archimer.ifremer.fr/doc/00287/39795/94062.pdf)
 

@@ -10,7 +10,6 @@
 % See https://archimer.ifremer.fr/doc/00287/39795/94062.pdf
 % equation 7.2.11 case 201_201_301 
 %
-% title - prescorrcalc vr - 1.0 author - bodc/qtl date - 20220808
 %         prescorrcalc vr - 1.0 author - bodc/vidkriv date - 20220810 Changed the coeff for this case id 
 
 function prescorr=prescorrcalc(pres,temp,pCoef2,pCoef3)

@@ -10,8 +10,6 @@
 % See https://archimer.ifremer.fr/doc/00287/39795/94062.pdf
 % equation 7.2.11 case 201_201_301 
 %
-% title - salcorrcalc vr - 1.0  author - bodc/qtl date - 20220808
-
 %         salcorrcalc vr - 1.0  bodc/vidkri date - 20220810- Changed the equation for the case id 201_202_202
 
 function salcorr=salcorrcalc(psal,temp,sref,spreset)
