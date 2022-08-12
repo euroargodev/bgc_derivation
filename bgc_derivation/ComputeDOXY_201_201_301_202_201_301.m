@@ -15,9 +15,9 @@
 % equation 7.2.22 case 202_201_301
 %
 % usage:
-%        obj=ComputeDOXY_201_201_301_202_201_201(molar_doxy(mask),P(mask),T(mask),S(mask),stcoeff);
+%        obj=ComputeDOXY_201_201_301_202_201_201(molar_doxy,pres,temp,psal,coeffs);
 %
-%        The derived DOXY output can be accessed from the class objects doxy field i.e.
+%        The derived DOXY can be accessed from the class objects doxy field i.e.
 %
 %        obj.doxy 
 %
