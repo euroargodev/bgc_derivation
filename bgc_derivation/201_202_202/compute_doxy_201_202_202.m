@@ -13,7 +13,7 @@
 %
 % title - compute_doxy_201_202_202 vr - 1.0 author - bodc/vidkri date - 20220811
 
-function doxy=compute_doxy_201_202_202(bphase,rphase,pres,temp,psal)
+function doxy=compute_doxy_201_202_202(bphase,rphase,pres,temp,psal,stcoeff)
 %compute the rphase
 if isempty(rphase), rphase =0; end
 
@@ -26,8 +26,8 @@ tpot=tetai(pres,temp,psal,0);
 rho=(sigma0+1000)/1000;
 
 %compute the molar_doxy
-molar_doxy=calcmolar_doxy_aanderaa3830(dphase,pres,temp)
+molar_doxy=calcmolar_doxy_aanderaa3830(dphase,pres,temp,stcoeff)
 % compute doxy [umol/kg]
-oxy=molar_doxy.*salcorrcalc(psal,temp).*prescorrcalc(pres,temp);
+oxy=molar_doxy.*salcorrcalc(psal,temp,stcoeff).*prescorrcalc(pres,temp,stcoeff);
 doxy=oxy./rho';
 

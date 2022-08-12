@@ -12,12 +12,8 @@
 %
 %         prescorrcalc vr - 1.0 author - bodc/vidkriv date - 20220810 Changed the coeff for this case id 
 
-function prescorr=prescorrcalc(pres,temp,pCoef2,pCoef3)
-
-% defaults for pressure coefficients
-if nargin<4, pCoef3=0.0419; end
-if nargin<3, pCoef2=0.00022; end
+function prescorr=prescorrcalc(pres,temp,stcoeff)
 
 % Pressure compensation correction
-prescorr=1+((((pCoef2*temp)+pCoef3).*pres)/1000);
+prescorr=1+((((stcoeff.Pcoef2*temp)+stcoeff.Pcoef3).*pres)/1000);
 return

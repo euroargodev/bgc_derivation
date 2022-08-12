@@ -12,26 +12,15 @@
 %
 %         salcorrcalc vr - 1.0  bodc/vidkri date - 20220810- Changed the equation for the case id 201_202_202
 
-function salcorr=salcorrcalc(psal,temp,sref,spreset)
 
-% defaults for sfref and spreset
-if nargin<5, spreset=0; end
+
+function salcorr=salcorrcalc(psal,temp,stcoeff,sref)
+% defaults for sfref and sref
 if nargin<4, sref=0; end
-
-% Co-efficients
-B0=-6.24523e-3;
-B1=-7.37614e-3;
-B2=-1.03410e-2;
-B3=-8.17083e-3; 
-C0=-4.88682e-7;
-D0=24.4543;
-D1=-67.4509; 
-D2=-4.8489;
-D3=-5.44e-4;
 
 % Salinity compensation correction
 ts = log((298.15-temp)./(273.15+temp));
-salcorr=A(temp,psal,spreset).*exp(((psal).*(B0+(B1.*ts)+(B2.*ts.^2)+(B3.*ts.^3)))+(C0.*(psal.^2 )));
+salcorr=A(temp,psal,stcoeff.Spreset).*exp(((psal).*(stcoeff.B0+(stcoeff.B1.*ts)+(stcoeff.B2.*ts.^2)+(stcoeff.B3.*ts.^3)))+(stcoeff.C0.*(psal.^2 )));
 
   % Inner function to calculate coefficent A
   function a=A(temp,psal,spreset)
@@ -40,6 +29,6 @@ salcorr=A(temp,psal,spreset).*exp(((psal).*(B0+(B1.*ts)+(B2.*ts.^2)+(B3.*ts.^3))
 
   % Inner function to calculate pH2O
   function ph2o=ph2ocalc(temp,salin)
-    ph2o=1013.25*exp(D0+D1*(100./(temp+273.15))+D2*log((temp+273.15)./100)+D3*salin);
+    ph2o=1013.25*exp(stcoeff.D0+stcoeff.D1*(100./(temp+273.15))+stcoeff.D2*log((temp+273.15)./100)+stcoeff.D3*salin);
   end
 end
