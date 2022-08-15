@@ -22,7 +22,7 @@
 %
 % title - pdoxy2doxy vr - 1.0 author - bodc/vidkri date - 20220815
 
-classdef p2doxy
+classdef phase2doxy
   properties
     % equation calibration coefficients
     Sref = 0,Spreset,
@@ -35,7 +35,7 @@ classdef p2doxy
     doxy % DOXY derivation 
   end
   methods
-    function this=p2doxy(bphase,rphase,pres,temp,psal,coeffs)
+    function this=phase2doxy(bphase,rphase,pres,temp,psal,coeffs)
       if ~exist('coeffs') 
         error('Error: calibration coefficients not set');
       else
