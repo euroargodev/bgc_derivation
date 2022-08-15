@@ -31,7 +31,6 @@ function equationid  =  getequationid(sensorid,profpath,certspec)
        '103_208','307','';
        '103_209','301','spec';
        '201_201','301','spec';
-       '201_202','204','spec';
        '201_203','204','spec'};
        
   

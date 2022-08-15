@@ -40,16 +40,16 @@ function processo2(floatnos,varargin)
    if(~addarg)
 %
 %  Need to add in the sensor ID
-%
+%    
      for  ii  =  1:numel(floatnos) 
        [~,sensorids] = geto2sensor(floatnos(ii));
-       if(numel(sensorids)>1)
-         for jj  =  1:numle(sensorids)
-           processo2(floatnos(ii).sensorids{jj})
+       if(numel(sensorids)>0)
+         for jj  =  1:numel(sensorids)
+          processo2(floatnos(ii),sensorids{jj})
          end
        end
      end
-     return
+    return
    end
  %
  %  So we know the sensorid a this point
@@ -75,7 +75,7 @@ function processo2(floatnos,varargin)
       ppath  =  fullfile(profpath,['*',profiles{ii},'.nc']);
       ppathst  =  dir(ppath);
       for jj  =  1:numel(ppathst)
-        pprofpath  =  fullfile(profpath,ppathst(jj).name);  
+        pprofpath  =  fullfile(profpath,ppathst(jj).name);
         equationid  =  getequationid(sensorid,pprofpath,certspec);
         if(isempty(equationid))
           pathctd{ii}  =  pprofpath;
@@ -90,7 +90,7 @@ function processo2(floatnos,varargin)
 %
 %  Now evaluate
 %
-    metafilepath  =  fullfile(floatpath,sprintf('%d',floatno),'_meta.nc');
+    metafilepath  =  fullfile(floatpath,sprintf('%d_meta.nc',floatno));
     stcoeff = getPredeploymentCoefficients(metafilepath);
     for  ii  =  1:numel(profiles)
       if(isempty(equid{ii}))
@@ -135,8 +135,34 @@ function processo2(floatnos,varargin)
           doxycalc  =  molar_doxy;             % Get right dimensions
           doxycalc(mask)  =  O2ctoO2s(molar_doxy(mask),T(mask),S(mask),P(mask)); %,p_atm(mask));
           doxy  =  ncdox{'DOXY'}(:)';
+        
+        case '201_202_202'
+          ncdox  =  netcdf(pathdox{ii});
+          ncctd  =  netcdf(pathctd{ii});
+          T  =  ncctd{'TEMP'}(1,:);
+          S  =  ncctd{'PSAL'}(1,:);
+          P  =  ncctd{'PRES'}(1,:);
+          bphasedoxy=ncdox{'BPHASE_DOXY'}(1,:);
+          rphasedoxy=ncdox{'RPHASE_DOXY'}(1,:);
+          stc  =  stcoeff(1).optode2;          
+          maskctdS = S == 99999; % as defined in the .nc file
+          mask = ~(maskctdS)';
+          
+          doxy_calc = [];
+          doxy_calc = phase2doxy(bphasedoxy,rphasedoxy,P,T,S,stc).doxy;
+          doxy  =  ncdox{'DOXY'}(1,:);
+        
+         if ~isempty(doxy)
+            diff = (abs(doxy-doxy_calc));
+            [doxy doxy_calc diff]';
+            min_diff = min((diff));
+            max_diff = max((diff));
 
-        case '201_202_204'
+            disp(['float ' num2str(floatno) ' profile ' num2str(ii) ...
+                 ' min diff ' num2str(min_diff,12) ' max diff ' num2str(max_diff,12)]) 
+          end
+
+      case '201_202_204'
         case '201_203_204'
         case '202_201_301'
         case '202_204_304'
