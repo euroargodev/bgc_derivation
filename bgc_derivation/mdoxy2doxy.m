@@ -15,16 +15,16 @@
 % equation 7.2.22 case 202_201_301
 %
 % usage:
-%        obj=ComputeDOXY_201_201_301_202_201_201(molar_doxy,pres,temp,psal,coeffs);
+%        obj=mdoxy2doxy(molar_doxy,pres,temp,psal,coeffs);
 %
 %        The derived DOXY can be accessed from the class objects doxy field i.e.
 %
 %        obj.doxy 
 %
 %
-% title - ComputeDOXY_201_201_301_202_201_301 vr - 1.0 author - bodc/qtl date - 20220808
+% title - mdoxy2doxy vr - 1.0 author - bodc/qtl date - 20220808
 
-classdef ComputeDOXY_201_201_301_202_201_301
+classdef mdoxy2doxy 
   properties
     % equation calibration coefficients
     Sref,Spreset,
@@ -35,7 +35,7 @@ classdef ComputeDOXY_201_201_301_202_201_301
     doxy % DOXY derivation 
   end
   methods
-    function this=ComputeDOXY_201_201_301_202_201_301(molar_doxy,pres,temp,psal,coeffs)
+    function this=mdoxy2doxy(molar_doxy,pres,temp,psal,coeffs)
       if ~exist('coeffs') 
         error('Error: calibration coefficients not set');
       else
