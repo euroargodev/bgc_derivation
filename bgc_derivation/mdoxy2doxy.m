@@ -19,7 +19,7 @@
 %
 %        The derived DOXY can be accessed from the class objects doxy field i.e.
 %
-%        obj.doxy 
+%        obj.doxy [umol/kg] 
 %
 %
 % title - mdoxy2doxy vr - 1.0 author - bodc/qtl date - 20220808
