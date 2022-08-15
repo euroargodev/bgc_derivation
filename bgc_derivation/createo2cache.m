@@ -81,7 +81,9 @@ function createo2cache(floatnos)
       pathdirp = fullfile(pathdir,'profiles');
       stdir  =  dir(pathdirp);
       cellname  =  struct2cell(stdir)';
-      mask =  strncmp(cellname(:,1),'BR',2);
+      maskbr =  strncmp(cellname(:,1),'BR',2);
+      maskbd =  strncmp(cellname(:,1),'BD',2);
+      mask  =  maskbr | maskbd;
       stdir(~mask)  =  [];
       if(numel(stdir)<20)
         fprintf('No data or insufficient data for float %d\n',floatno)
@@ -111,13 +113,13 @@ function createo2cache(floatnos)
 %
       for ii  =  1:numel(testfiles)
         copyfile(testfiles{ii},cachepathdirp)
-        rfile  =  regexprep(testfiles{ii},'BR([0-9])*','R$1');
+        rfile  =  regexprep(testfiles{ii},'B[RD]([0-9])*','R$1');
         if(exist(rfile,'file'))
           copyfile(rfile,cachepathdirp);
           addfiles{ii}  =  rfile;
           continue;
         end
-        dfile  =  regexprep(testfiles{ii},'BR([0-9])*','D$1');
+        dfile  =  regexprep(testfiles{ii},'B[RD]([0-9])*','D$1');
         if(exist(dfile,'file'))
           copyfile(dfile,cachepathdirp);
           addfiles{ii}  =  dfile;
@@ -150,11 +152,11 @@ function createo2cache(floatnos)
       ncobj  =  netcdf(testfiles{ii});
       type  =  regexprep(testfiles{ii},'^(.*/)([A-Z]){1,2}([^/]*)$','$2');
       switch(type)
-        case 'BR'
+        case {'BR','BD'}
           mm  =  mm + 1;
           profileid{mm} = ...
            regexprep(testfiles{ii},'^(.*/)([A-Z]){1,2}([^/]*).nc$','$3');
-        case 'D'
+        case {'D','R'}
           nn  =  nn + 1;
         otherwise
           error('Unrecognised type %s',type)
@@ -169,9 +171,9 @@ function createo2cache(floatnos)
         if(~isempty(regexp(varnam,'DOXY|PRES|SAL|TEMP|SCIENTIFIC','match')))  
 %           fprintf('    %2d)variable %s\n',jj,name(vars{jj}));
           switch(type) 
-            case 'BR'
+            case {'BR','BD'}
               doxystruct.(varnam)  =  ncobj{varnam}(:);
-            case 'D'
+            case {'D','R'}
               ctdstruct.(varnam)  =  ncobj{varnam}(:); 
             otherwise
               error('Unexpected type %s',type);     
@@ -181,8 +183,8 @@ function createo2cache(floatnos)
       close(ncobj)
       if(exist('doxystruct','var')), save(testmat,'doxystruct'); end
       if(exist('ctdstruct','var')), save(testmat,'ctdstruct'); end
-      end
-      if(mm~=nn)
-        error('Structure array mismatch %d:%d',mm,nn)
-      end
+    end
+    if(mm~=nn)
+      error('Structure array mismatch %d:%d',mm,nn)
+    end
 
