@@ -1,8 +1,10 @@
-function processo2(floatnos)
+function processo2(floatnos,varargin)
 %
-%     processo2(floatno)
+%     processo2(floatnos[,sensorid])
 %  where
 %     floatnos      is the float number (integer) or an array of same
+%     sensorid      is identifier in the calibration system for the sensor
+%                       (e.g. '103' or '201').
 %
 %   A float is processed for oxygen saturation. This first involves
 %   segregating the data into profiles, determining the equation to be applied
@@ -14,18 +16,45 @@ function processo2(floatnos)
 
 %  title - s processo2  vr - 1.0  authot - bodc/sgl  date - 20211112
 
-
+   sensorid  =  '';
+   addarg  =  false;
+   while(numel(varargin))
+     varg  =  varargin{1};
+     varargin(1)  =  [];
+     vargtype  =  class(varg);
+     switch(vargtype)
+       case 'char'
+         sensorid  =  varg;
+         addarg  =  true;
+       otherwise
+         error('Unrecognised type %s',vargtype)
+     end
+   end
 %
-%  If more than one invoke recursively
+%  If more than one sensor ID invoke recursively
 % 
-    if(numel(floatnos)>1)
-      for  ii  =  1:numel(floatnos) 
-         processo2(floatnos(ii));
-      end
-      return
-    end
-    floatno  =  floatnos(1);
+   if(addarg && numel(floatnos)>1)
+     processo2(floatnos,sensorid)
+     return
+   end
+   if(~addarg)
 %
+%  Need to add in the sensor ID
+%
+     for  ii  =  1:numel(floatnos) 
+       [~,sensorids] = geto2sensor(floatnos(ii));
+       if(numel(sensorids)>1)
+         for jj  =  1:numle(sensorids)
+           processo2(floatnos(ii).sensorids{jj})
+         end
+       end
+     end
+     return
+   end
+ %
+ %  So we know the sensorid a this point
+ %
+    floatno  =  floatnos(1);
     floatpath  =  getfloatpath(floatno);
     profpath  =  fullfile(floatpath,'profiles');
 %
@@ -33,7 +62,6 @@ function processo2(floatnos)
 %  of <float>_<profile> 
 %
     profiles  =  getprofiles(floatno);
-    [~,sensorid]  =  geto2sensor(floatno);
     certspec  =  true;                 %irrelevant if no choice to be made
     pathdox  =  cell(size(profiles));
     pathctd  =  pathdox;
@@ -62,6 +90,8 @@ function processo2(floatnos)
 %
 %  Now evaluate
 %
+    metafilepath  =  fullfile(floatpath,sprintf('%d',floatno),'_meta.nc');
+    stcoeff = getPredeploymentCoefficients(metafilepath);
     for  ii  =  1:numel(profiles)
       if(isempty(equid{ii}))
         error('No equation defined for this profile %s',profiles{ii})
@@ -69,16 +99,32 @@ function processo2(floatnos)
 %
 %  Note the transpose in the following to get to conventional columns
 %
-      ncdox  =  netcdf(pathdox{ii});
-      ncctd  =  netcdf(pathctd{ii});
-      T  =  ncctd{'TEMP_ADJUSTED'}(:)';
-      P  =  ncctd{'PRES_ADJUSTED'}(:)';
-      S  =  ncctd{'PSAL_ADJUSTED'}(:)';
-      
+
       switch(equid{ii})
         case '103_208_307'
+%Seabird   
+          phase_delay_doxy  =  ncdox{'PHASE_DELAY_DOXY'}(:)';
+          S  =  ncctd{'PSAL'}(:)';
+          P  =  ncctd{'PRES'}(:)';
+          Tdox  =  ncdox{'TEMP_DOXY'}(:)';
+          maskdoxy  =  phase_delay_doxy  ==  99999;  %  More properly this should be the fill value
+          maskctd  =  S == 99999;              %  as defined in the .nc file
+          maskdoxy  =  maskdoxy | Tdox == 99999;
+          mask  =  ~(maskdoxy | maskctd);
+
+          doxycalc  =  phase_delay_doxy;             % Get right dimensions
+          stc  =  stcoeff.optode1;
+          doxycalc(mask)  =  O2phoO2s(stc,phase_delay_doxy(mask),P(mask),Tdox(mask),S(mask)); 
+          doxy  =  ncdox{'DOXY'}(:)';
         case '103_209_301'
-        case '201_201_301'    %  NB THIS CODE is under development - stored and calculated values
+        case '201_201_301' 
+          ncdox  =  netcdf(pathdox{ii});
+          ncctd  =  netcdf(pathctd{ii});
+          T  =  ncctd{'TEMP_ADJUSTED'}(:)';
+          P  =  ncctd{'PRES_ADJUSTED'}(:)';
+          S  =  ncctd{'PSAL_ADJUSTED'}(:)';
+
+          %  NB THIS CODE is under development - stored and calculated values
                               %  do not yet agree
           molar_doxy  =  ncdox{'MOLAR_DOXY'}(:)';
           maskdoxy  =  molar_doxy  ==  99999;  %  More properly this should be the fill value
