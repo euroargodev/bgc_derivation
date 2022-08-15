@@ -39,7 +39,7 @@ classdef p2doxy
       if ~exist('coeffs') 
         error('Error: calibration coefficients not set');
       else
-        % set coefficients
+       % set coefficients
        %get only the tab coeff (without C01- c43)
         this.tabCoef = gentabmatrix(this,coeffs);
         for  ii  =  0:4
@@ -76,7 +76,7 @@ classdef p2doxy
       doxy=oxy./rho';
     end
     
-    % calculate moalrdoxy 
+    % calculate molardoxy 
     function molar_doxy=molardoxycalc(this,dPhaseDoxy, pres,temp)
      
      phasePcorr = dPhaseDoxy + this.Pcoef1 .* pres/1000;
@@ -111,7 +111,7 @@ classdef p2doxy
       ph2o=1013.25*exp(this.D0+this.D1*(100./(temp+273.15))+ ...
                        this.D2*log((temp+273.15)./100)+this.D3*salin);
     end
-    %generate a matrix of ceratin coeff
+    %generate a matrix of certain coeff
     function matrix  =  gentabmatrix(this,stcoeff)
      fields  =  fieldnames(stcoeff);
      mask =  ~cellfun(@isempty,regexp(fields,'^c[0-4][0-3]$'));
