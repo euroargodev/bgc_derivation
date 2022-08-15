@@ -165,12 +165,14 @@ function processo2(floatnos,varargin)
           % difference between doxy and calculated doxy
           if ~isempty(doxy)
             diff = (abs(doxy-obj.doxy))';
+            accuracy = (doxy ./ obj.doxy) * 100;
             [doxy' obj.doxy' diff];
             min_diff = min((diff));
             max_diff = max((diff));
 
             disp(['float ' num2str(floatnos) ' profile ' num2str(ii) ...
-                 ' min diff ' num2str(min_diff,12) ' max diff ' num2str(max_diff,12)]) 
+                 ', min-diff ' num2str(min_diff,8) ', max-diff ' num2str(max_diff,8) ...
+                 ', min-accuracy ' num2str(min(accuracy),8) '% , max accuracy ' num2str(max(accuracy),8) '%']) 
           end
 
         case '201_202_204'
