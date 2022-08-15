@@ -1,10 +1,11 @@
-function [oxysensor,sensorid] = geto2sensor(floatno)
+function [oxysensors,sensorids] = geto2sensor(floatno)
 %  Identifies a match from SENSOR_MODEL
-%     [oxysensor,sensorid] = geto2sensor(floatno)
+%     oxysensor = geto2sensor(floatno)
 %   where
-%     oxysensor      is name of sensor (as seen in metadata file)
-%     sensorid       is the identifier for the sensor in the calibration
-%                        system
+%     oxysensors      is cell array of sensors (as seen in metadata file)
+%     sensorids       is cell array of identifiers for the sensors in 
+%                        the calibration system
+%     
 
 % title - s geto2sensor  vr - 1.0  author - bodc/sgl  date - 20211112
 
@@ -12,6 +13,7 @@ function [oxysensor,sensorid] = geto2sensor(floatno)
       {'AANDERAA_OPTODE_4330','202';
        'AANDERAA_OPTODE_3830','201';
        'SBE63_OPTODE','103'};
+     
 %
 %  Look in metadata file
 %
@@ -28,16 +30,14 @@ function [oxysensor,sensorid] = geto2sensor(floatno)
     ncobj  =   netcdf(metafile);
     sensor_model  =  ncobj{'SENSOR_MODEL'}(:);
     sensor_model  =  cellstr(sensor_model);
-    oxysensor  =  '';
-    for ii  =  1:numel(sensor_model)
-      mask =  strcmp(sensor_model{ii},oxysensorlist(:,1));
-      if(any(mask))
-        if(isempty(oxysensor))
-          oxysensor = sensor_model{ii}; 
-          sensorid  =  oxysensorlist{mask,2};
-        else
-          error('More than one match for oxygen sensor')
-        end
+    oxysensors  =  {};
+    sensorids  =  {};
+    jj  =  0;
+    for ii  =  1:size(oxysensorlist,1)
+      if(any(strcmp(oxysensorlist(ii,1),sensor_model)))
+        jj  =  jj + 1;
+        oxysensors{jj} =  oxysensorlist{ii,1};
+        sensorids{jj}  =  oxysensorlist{ii,2};
       end
     end
     close(ncobj)
