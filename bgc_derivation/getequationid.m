@@ -25,6 +25,7 @@ function equationid  =  getequationid(sensorid,profpath,certspec)
        'DPHASE_DOXY','203'};
    equationids =  ...
       {'202_201','301','';
+       '201_202','202','';
        '202_204','304','';
        '202_204','305','spec';
        '103_208','307','';
