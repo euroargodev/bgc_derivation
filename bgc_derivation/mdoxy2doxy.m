@@ -8,7 +8,7 @@
 %        psal: salinity measurement values from CTD
 %        coeffs: structure holding the required calibration coefficents.
 %
-% This covers OPTODES AANDERAA_OPTODE_4330 and AANDERAA_OPTODE_4330 
+% This covers OPTODES AANDERAA_OPTODE_3830 and AANDERAA_OPTODE_4330 
 %
 % See https://archimer.ifremer.fr/doc/00287/39795/94062.pdf
 % equation 7.2.11 case 201_201_301
@@ -19,7 +19,7 @@
 %
 %        The derived DOXY can be accessed from the class objects doxy field i.e.
 %
-%        obj.doxy 
+%        obj.doxy [umol/kg] 
 %
 %
 % title - mdoxy2doxy vr - 1.0 author - bodc/qtl date - 20220808

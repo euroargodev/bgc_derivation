@@ -30,6 +30,7 @@ function processo2(floatnos,varargin)
          error('Unrecognised type %s',vargtype)
      end
    end
+
 %
 %  If more than one sensor ID invoke recursively
 % 
@@ -43,9 +44,10 @@ function processo2(floatnos,varargin)
 %
      for  ii  =  1:numel(floatnos) 
        [~,sensorids] = geto2sensor(floatnos(ii));
-       if(numel(sensorids)>1)
-         for jj  =  1:numle(sensorids)
-           processo2(floatnos(ii).sensorids{jj})
+       
+       if(numel(sensorids)>=1)
+         for jj  =  1:numel(sensorids)
+           processo2(floatnos(ii), sensorids{jj});
          end
        end
      end
@@ -90,7 +92,7 @@ function processo2(floatnos,varargin)
 %
 %  Now evaluate
 %
-    metafilepath  =  fullfile(floatpath,sprintf('%d',floatno),'_meta.nc');
+    metafilepath  =  fullfile(floatpath,sprintf('%d_meta.nc',floatno));
     stcoeff = getPredeploymentCoefficients(metafilepath);
     for  ii  =  1:numel(profiles)
       if(isempty(equid{ii}))
@@ -99,6 +101,8 @@ function processo2(floatnos,varargin)
 %
 %  Note the transpose in the following to get to conventional columns
 %
+      ncdox  =  netcdf(pathdox{ii});
+      ncctd  =  netcdf(pathctd{ii});
 
       switch(equid{ii})
         case '103_208_307'
@@ -117,28 +121,57 @@ function processo2(floatnos,varargin)
           doxycalc(mask)  =  O2phoO2s(stc,phase_delay_doxy(mask),P(mask),Tdox(mask),S(mask)); 
           doxy  =  ncdox{'DOXY'}(:)';
         case '103_209_301'
-        case '201_201_301' 
-          ncdox  =  netcdf(pathdox{ii});
-          ncctd  =  netcdf(pathctd{ii});
-          T  =  ncctd{'TEMP_ADJUSTED'}(:)';
-          P  =  ncctd{'PRES_ADJUSTED'}(:)';
-          S  =  ncctd{'PSAL_ADJUSTED'}(:)';
+        case {'201_201_301','202_201_301'}
 
-          %  NB THIS CODE is under development - stored and calculated values
-                              %  do not yet agree
-          molar_doxy  =  ncdox{'MOLAR_DOXY'}(:)';
-          maskdoxy  =  molar_doxy  ==  99999;  %  More properly this should be the fill value
-          maskctd  =  S == 99999;              %  as defined in the .nc file
+          % if empty coefficients then either we can
+          %
+          % 1) set them to those in the Argo manual
+          % 2) get them from the database (to do)
+          % 3) continue loop' for now 
+          %
+          if isempty(stcoeff)
+            %{ % Argo manual defaults
+            coeffs.Sref=0; coeffs.Spreset=0;
+            coeffs.Pcoef2=0.00025; coeffs.Pcoef3=0.0328;
+            coeffs.B0=-6.24523e-3; coeffs.B1=-7.37614e-3; coeffs.B2=-1.03410e-2; coeffs.B3=-8.17083e-3;
+            coeffs.C0=-4.88682e-7;
+            coeffs.D0=24.4543; coeffs.D1=-67.4509; coeffs.D2=-4.8489; coeffs.D3=-0.000544;
+            %}
+            disp('could not find predeployment calibration coefficients')
+            continue;
+          else
+            coeffNames=fieldnames(stcoeff.optode1); % could be many optodes
+            for i=1:numel(coeffNames)
+              eval(['coeffs.' coeffNames{i} '=' num2str(stcoeff.optode1.(coeffNames{i})) ';']);
+            end
+          end
 
-          mask  =  ~(maskdoxy | maskctd);
+          T  =  ncctd{'TEMP'}(:);
+          P  =  ncctd{'PRES'}(:);
+          S  =  ncctd{'PSAL'}(:);
+          molar_doxy = ncdox{'MOLAR_DOXY'}(:);
+          doxy = ncdox{'DOXY'}(:);
 
-          doxycalc  =  molar_doxy;             % Get right dimensions
-          doxycalc(mask)  =  O2ctoO2s(molar_doxy(mask),T(mask),S(mask),P(mask)); %,p_atm(mask));
-          doxy  =  ncdox{'DOXY'}(:)';
+          %fillval_doxy = ncreadatt(pathdox{ii},'MOLAR_DOXY','_FillValue');
+          %fillval_ctd = ncreadatt(pathctd{ii},'PSAL','_FillValue');
+
+          % doxy computation
+          doxy_calc = mdoxy2doxy(molar_doxy,P,T,S,coeffs);
+        
+          % difference between doxy and calculated doxy, test 1st column
+          if ~isempty(doxy)
+            diff = (abs(doxy(1,:)-doxy_calc.doxy(1,:)))';
+            accuracy = (doxy(1,:) ./ doxy_calc.doxy(1,:)) * 100;
+            min_diff = min((diff));
+            max_diff = max((diff));
+
+            disp(['float ' num2str(floatnos) ' profile ' num2str(ii) ...
+                 ', min-diff ' num2str(min_diff,8) ', max-diff ' num2str(max_diff,8) ...
+                 ', min-accuracy ' num2str(min(accuracy),8) '% , max accuracy ' num2str(max(accuracy),8) '%']) 
+          end
 
         case '201_202_204'
         case '201_203_204'
-        case '202_201_301'
         case '202_204_304'
         case '202_204_305'
         case '202_205_304'
