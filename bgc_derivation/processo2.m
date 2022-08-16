@@ -15,6 +15,7 @@ function processo2(floatnos,varargin)
 %      Also no wiring yet for certificate values
 
 %  title - s processo2  vr - 1.0  authot - bodc/sgl  date - 20211112
+%                       vr -1.0.1 authot -bodc/vidkri date - 20020816 added the case 201_202_202
 
    sensorid  =  '';
    addarg  =  false;
@@ -99,6 +100,8 @@ function processo2(floatnos,varargin)
 %
 %  Note the transpose in the following to get to conventional columns
 %
+      ncdox  =  netcdf(pathdox{ii});
+      ncctd  =  netcdf(pathctd{ii});
 
       switch(equid{ii})
         case '103_208_307'
@@ -137,22 +140,24 @@ function processo2(floatnos,varargin)
           doxy  =  ncdox{'DOXY'}(:)';
         
         case '201_202_202'
-          ncdox  =  netcdf(pathdox{ii});
-          ncctd  =  netcdf(pathctd{ii});
-          T  =  ncctd{'TEMP'}(1,:);
-          S  =  ncctd{'PSAL'}(1,:);
-          P  =  ncctd{'PRES'}(1,:);
-          bphasedoxy=ncdox{'BPHASE_DOXY'}(1,:);
-          rphasedoxy=ncdox{'RPHASE_DOXY'}(1,:);
-          stc  =  stcoeff(1).optode2;          
+          T  =  ncctd{'TEMP'}(:);
+          S  =  ncctd{'PSAL'}(:);
+          P  =  ncctd{'PRES'}(:);
+          bphasedoxy=ncdox{'BPHASE_DOXY'}(:);
+          rphasedoxy=ncdox{'RPHASE_DOXY'}(:);
+          doxy  =  ncdox{'DOXY'}(:);
+          
+          %retrieving the calibration coeffs.
+          stc  =  stcoeff(1).optode2; % could be many optodes.sgl working on geto2sensor to solve the issue.         
           maskctdS = S == 99999; % as defined in the .nc file
           mask = ~(maskctdS)';
           
+          %computing doxy 
           doxy_calc = [];
           doxy_calc = phase2doxy(bphasedoxy,rphasedoxy,P,T,S,stc).doxy;
-          doxy  =  ncdox{'DOXY'}(1,:);
-        
-         if ~isempty(doxy)
+          
+          %difference between the computed and doxy in netcdf
+          if ~isempty(doxy)
             diff = (abs(doxy-doxy_calc));
             [doxy doxy_calc diff]';
             min_diff = min((diff));
