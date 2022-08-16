@@ -14,8 +14,7 @@ function processo2(floatnos,varargin)
 %   NB Code under development. Calculated v. stored differ for 201_201_301. 
 %      Also no wiring yet for certificate values
 
-%  title - s processo2  vr - 1.0  authot - bodc/sgl  date - 20211112
-%                       vr -1.0.1 authot -bodc/vidkri date - 20020816 added the case 201_202_202
+%  title - s processo2  vr - 1.0  author - bodc/sgl  date - 20211112
 
    sensorid  =  '';
    addarg  =  false;
@@ -154,7 +153,7 @@ function processo2(floatnos,varargin)
           
           %computing doxy 
           doxy_calc = [];
-          doxy_calc = phase2doxy(bphasedoxy,rphasedoxy,P,T,S,stc).doxy;
+          doxy_calc = phase2doxy(bphasedoxy,rphasedoxy,P,T,S(mask),stc).doxy;
           
           %difference between the computed and doxy in netcdf
           if ~isempty(doxy)
