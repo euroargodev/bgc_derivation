@@ -170,6 +170,33 @@ function processo2(floatnos,varargin)
                  ', min-accuracy ' num2str(min(accuracy),8) '% , max accuracy ' num2str(max(accuracy),8) '%']) 
           end
 
+         case '201_202_202'
+          T  =  ncctd{'TEMP'}(:);
+          S  =  ncctd{'PSAL'}(:);
+          P  =  ncctd{'PRES'}(:);
+          bphasedoxy=ncdox{'BPHASE_DOXY'}(:);
+          rphasedoxy=ncdox{'RPHASE_DOXY'}(:);
+          doxy  =  ncdox{'DOXY'}(:);
+          
+          %retrieving the calibration coeffs.
+          stc  =  stcoeff(1).optode2; % could be many optodes.sgl working on geto2sensor to solve the issue.         
+          maskctdS = S == 99999; % as defined in the .nc file
+          mask = ~(maskctdS)';
+          
+          %computing doxy 
+          doxy_calc = [];
+          doxy_calc = phase2doxy(bphasedoxy,rphasedoxy,P,T,S(mask),stc).doxy;
+          
+          %difference between the computed and doxy in netcdf
+          if ~isempty(doxy)
+            diff = (abs(doxy-doxy_calc));
+            [doxy doxy_calc diff]';
+            min_diff = min((diff));
+            max_diff = max((diff));
+
+            disp(['float ' num2str(floatno) ' profile ' num2str(ii) ...
+                 ' min diff ' num2str(min_diff,12) ' max diff ' num2str(max_diff,12)]) 
+          end
         case '201_202_204'
         case '201_203_204'
         case '202_204_304'
