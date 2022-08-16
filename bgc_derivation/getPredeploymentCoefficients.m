@@ -1,9 +1,10 @@
-function stcoeff  =  getPredeplomentCoefficients(metadatafile)
+function [stcoeff,sensoro2]  =  getPredeplomentCoefficients(metadatafile)
 %
-%    stcoeff  =  getPredeplomentCoefficients(metadatafile)
+%    [stcoeff,sensoro2]  =  getPredeplomentCoefficients(metadatafile)
 %  where 
 %    stcoeff        is a structure of coefficients required for oxygen
 %                   calibration. 
+%    sensoro2       is the cell array of associated oxygen sensors
 %    metadatafile   is the path to the appropriate NC metadata file
 %
 %  The information is stored in the PREDEPLOYMENT_CALIB_COEFFICIENT 
@@ -15,10 +16,13 @@ metanc  =  netcdf(metadatafile);
 stcoeff  =  struct([]);
 vals  =  metanc{'PREDEPLOYMENT_CALIB_COEFFICIENT'}(:);
 names  =  metanc{'PREDEPLOYMENT_CALIB_COMMENT'}(:);
+
 mask  =  ~cellfun(@isempty,regexp(cellstr(names),'Argo (oxygen|OXYGEN) data'));
-
-
-if(sum(mask)==0), return; end
+[~,sensoro2]  =  geto2sensor(metadatafile);
+if(sum(mask)==0)
+  close(metanc);
+  return; 
+end
 clear stcoeff
 theStruct  =  struct([]);
 vals  =  vals(mask,:);

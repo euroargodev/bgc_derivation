@@ -1,7 +1,9 @@
-function processo2(floatnos,varargin)
+function varargout  =  processo2(floatnos,varargin)
 %
-%     processo2(floatnos[,sensorid])
+%     [doxy_cell =  ] processo2(floatnos[,sensorid])
 %  where
+%     doxy_cell     This output is aligned with the floatnos array
+%                      (but see below)
 %     floatnos      is the float number (integer) or an array of same
 %     sensorid      is identifier in the calibration system for the sensor
 %                       (e.g. '103' or '201').
@@ -11,8 +13,9 @@ function processo2(floatnos,varargin)
 %   for the individual profile, reading the data from the .nc files and 
 %   outputting the desired O2 output (DOXY).
 %
-%   NB Code under development. Calculated v. stored differ for 201_201_301. 
+%   NB Code under development.  
 %      Also no wiring yet for certificate values
+%      No support for output from the function until mapped out with PO
 
 %  title - s processo2  vr - 1.0  authot - bodc/sgl  date - 20211112
 
@@ -31,6 +34,12 @@ function processo2(floatnos,varargin)
      end
    end
 %
+%  If nargout > 0 
+%
+   if(nargout)
+     error('Output arrays not supported yet')
+   end
+%
 %  If more than one sensor ID invoke recursively
 % 
    if(addarg && numel(floatnos)>1)
@@ -43,9 +52,9 @@ function processo2(floatnos,varargin)
 %
      for  ii  =  1:numel(floatnos) 
        [~,sensorids] = geto2sensor(floatnos(ii));
-       if(numel(sensorids)>1)
-         for jj  =  1:numle(sensorids)
-           processo2(floatnos(ii).sensorids{jj})
+       if(numel(sensorids))
+         for jj  =  1:numel(sensorids)
+           processo2(floatnos(ii),sensorids{jj})
          end
        end
      end
@@ -71,12 +80,14 @@ function processo2(floatnos,varargin)
 %  contain references to "DOXY" variables before an equationid will be
 %  issued
 %
+    [~,sensorids] = geto2sensor(floatno);
     for ii = 1:numel(profiles)
       ppath  =  fullfile(profpath,['*',profiles{ii},'.nc']);
       ppathst  =  dir(ppath);
       for jj  =  1:numel(ppathst)
         pprofpath  =  fullfile(profpath,ppathst(jj).name);  
-        equationid  =  getequationid(sensorid,pprofpath,certspec);
+        pso2  =  find(strcmp(sensorid,sensorids));
+        equationid  =  getequationid(sensorid,pso2,pprofpath,certspec);
         if(isempty(equationid))
           pathctd{ii}  =  pprofpath;
           continue;
@@ -90,7 +101,7 @@ function processo2(floatnos,varargin)
 %
 %  Now evaluate
 %
-    metafilepath  =  fullfile(floatpath,sprintf('%d',floatno),'_meta.nc');
+    metafilepath  =  fullfile(floatpath,sprintf('%d_meta.nc',floatno));
     stcoeff = getPredeploymentCoefficients(metafilepath);
     for  ii  =  1:numel(profiles)
       if(isempty(equid{ii}))
@@ -102,20 +113,35 @@ function processo2(floatnos,varargin)
 
       switch(equid{ii})
         case '103_208_307'
-%Seabird   
-          phase_delay_doxy  =  ncdox{'PHASE_DELAY_DOXY'}(:)';
+%Seabird 
+%
+%  Is this first or later sensor? Variable names are qualified to match
+%
+          ncdox  =  netcdf(pathdox{ii});
+          ncctd  =  netcdf(pathctd{ii}); 
+          stoptode  =  sprintf('optode%d',pso2);
+          cpso2  =    sprintf('%d',pso2);
+          if(pso2==1), cpso2  =  ''; end
+%          
+          phase_delay_doxy  =  ncdox{['PHASE_DELAY_DOXY',cpso2]}(:)';
           S  =  ncctd{'PSAL'}(:)';
           P  =  ncctd{'PRES'}(:)';
-          Tdox  =  ncdox{'TEMP_DOXY'}(:)';
+          Tdox  =  ncdox{['TEMP_DOXY',cpso2]}(:)';
           maskdoxy  =  phase_delay_doxy  ==  99999;  %  More properly this should be the fill value
           maskctd  =  S == 99999;              %  as defined in the .nc file
           maskdoxy  =  maskdoxy | Tdox == 99999;
           mask  =  ~(maskdoxy | maskctd);
 
           doxycalc  =  phase_delay_doxy;             % Get right dimensions
-          stc  =  stcoeff.optode1;
-          doxycalc(mask)  =  O2phoO2s(stc,phase_delay_doxy(mask),P(mask),Tdox(mask),S(mask)); 
-          doxy  =  ncdox{'DOXY'}(:)';
+          if(floatno==6900889)  %  fudge for this float
+            stoptode(end)  =  '3';
+          end
+          stc  =  stcoeff.(stoptode);
+          doxycalc(mask)  =  O2phtoO2(stc,phase_delay_doxy(mask),P(mask),Tdox(mask),S(mask)); 
+          doxy  =  ncdox{['DOXY',cpso2]}(:)';
+          close(ncctd);
+          close(ncdox);
+
         case '103_209_301'
         case '201_201_301' 
           ncdox  =  netcdf(pathdox{ii});
@@ -135,6 +161,9 @@ function processo2(floatnos,varargin)
           doxycalc  =  molar_doxy;             % Get right dimensions
           doxycalc(mask)  =  O2ctoO2s(molar_doxy(mask),T(mask),S(mask),P(mask)); %,p_atm(mask));
           doxy  =  ncdox{'DOXY'}(:)';
+          close(ncctd);
+          close(ncdox);
+
 
         case '201_202_204'
         case '201_203_204'
@@ -145,6 +174,4 @@ function processo2(floatnos,varargin)
         otherwise
           error('Unknown equation designator: %s',equid{ii});
       end
-      close(ncctd);
-      close(ncdox);
     end

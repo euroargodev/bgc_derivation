@@ -1,11 +1,13 @@
-function equationid  =  getequationid(sensorid,profpath,certspec)
+function equationid  =  getequationid(sensorid,sensord,profpath,certspec)
 %
-%    equationid  =  getequationid(sensorid,profpath,certspec)
+%    equationid  =  getequationid(sensorid,sensor,profpath,certspec)
 %  where 
 %    equationid       is either returned empty or with the desired
 %                     equation id (concatenation of sensor, parameter and 
 %                     calibration IDs)
 %    sensorid         sensor ID; available from geto2sensor.m
+%    sensord          Sensor ordinal. Where sensor comes in the file's list
+%                      of oxygen sensors
 %    profpath         path of profile file
 %    certspec         set true if certificate info needed. Only used where 
 %                     discrimination required
@@ -22,7 +24,8 @@ function equationid  =  getequationid(sensorid,profpath,certspec)
        'PHASE_DELAY_DOXY','208';
        'MLPL_DOXY','209';
        'BPHASE_DOXY','202';
-       'DPHASE_DOXY','203'};
+       'DPHASE_DOXY','203'
+       };
    equationids =  ...
       {'202_201','301','';
        '202_204','304','';
@@ -42,15 +45,33 @@ function equationid  =  getequationid(sensorid,profpath,certspec)
    equationid  =  '';
    mapped  =  false;
    doxypres  =  false;
+   if(sensord>1)
+     spo2  =  sprintf('%d',sensord);
+   else
+     spo2  =  '';
+   end
    for  ii  =  1:numel(vars)
      varnam  =  name(vars{ii});
-     if(isempty(regexp(varnam,'DOXY','match'))), continue; end
-     doxypres  =  true;
-     mask  =  strcmp(varnam,paramids(:,1));
-     if(~any(mask)), continue; end   
-     mapped  =  true;
-     paramid  =  paramids{mask,2};
-     break;
+     for  jj  =  1:size(paramids,1)
+       expr  =  ['^',paramids{jj,1},spo2,'$'];
+       if(isempty(regexp(varnam,expr,'match'))), continue; end
+       paramid  =  paramids{jj,2};
+       doxypres  =  true;
+       mapped  =  true;
+       break;
+     end
+%      doxypres  =  true;
+%      
+%      sz1  =  size(paramids,1);
+%      mask  =  ~isempty(regexp(varnam,cellfun(@cat,repmat({2},sz1,1),...
+%        paramids(:,1),repmat({'[2-3]?'},sz1,1),'UniformOutput',false) ));
+%      if(~any(mask)), continue; end  
+%      if(sum(mask)>1)
+%        error('Unexpected matching')
+%      end
+%      mapped  =  true;
+%      paramid  =  paramids{mask,2};
+%      break;
    end
    close(ncobj);
 %
