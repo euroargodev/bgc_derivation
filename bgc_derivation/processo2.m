@@ -146,27 +146,22 @@ function processo2(floatnos,varargin)
             end
           end
 
-          T  =  ncctd{'TEMP'}(1,:);
-          P  =  ncctd{'PRES'}(1,:);
-          S  =  ncctd{'PSAL'}(1,:);
-          molar_doxy = ncdox{'MOLAR_DOXY'}(1,:);
-          doxy = ncdox{'DOXY'}(1,:);
+          T  =  ncctd{'TEMP'}(:);
+          P  =  ncctd{'PRES'}(:);
+          S  =  ncctd{'PSAL'}(:);
+          molar_doxy = ncdox{'MOLAR_DOXY'}(:);
+          doxy = ncdox{'DOXY'}(:);
 
-          fillval_doxy = ncreadatt(pathdox{ii},'MOLAR_DOXY','_FillValue');
-          fillval_ctd = ncreadatt(pathctd{ii},'PSAL','_FillValue');
-
-          maskdoxy = molar_doxy == fillval_doxy;
-          maskctd = S == fillval_ctd;
-          mask =~ (maskdoxy | maskctd)';
+          %fillval_doxy = ncreadatt(pathdox{ii},'MOLAR_DOXY','_FillValue');
+          %fillval_ctd = ncreadatt(pathctd{ii},'PSAL','_FillValue');
 
           % doxy computation
-          obj = mdoxy2doxy(molar_doxy(mask),P(mask),T(mask),S(mask),coeffs);
-
-          % difference between doxy and calculated doxy
+          doxy_calc = mdoxy2doxy(molar_doxy,P,T,S,coeffs);
+        
+          % difference between doxy and calculated doxy, test 1st column
           if ~isempty(doxy)
-            diff = (abs(doxy-obj.doxy))';
-            accuracy = (doxy ./ obj.doxy) * 100;
-            [doxy' obj.doxy' diff];
+            diff = (abs(doxy(1,:)-doxy_calc.doxy(1,:)))';
+            accuracy = (doxy(1,:) ./ doxy_calc.doxy(1,:)) * 100;
             min_diff = min((diff));
             max_diff = max((diff));
 
