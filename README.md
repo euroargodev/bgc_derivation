@@ -93,7 +93,7 @@ Where:
 - pres is the pressure measurement values from CTD 
 - temp is the temperature measurement values from CTD
 - psal is the salinity measurement values from CTD
-- coeffs is the structure to hold the predeployment cablibration coefficients
+- coeffs is a structure to hold the predeployment cablibration coefficients
         
         Required coeff's for 
         mdoxy2doxy:
