@@ -82,7 +82,7 @@ Where:
 - scale is the scale factor coefficient
 - betasw is the seawater contribution to backscattering coefficient
 
-### Oxygen - mdoxy2doxy, phase2doxy
+### Dissolved Oxygen - mdoxy2doxy, phase2doxy
 ```matlab
 doxy=mdoxy2doxy(molar_doxy,pres,temp,psal,coeffs);
 doxy=phase2doxy(bphase,rphase,pres,temp,psal,coeffs);
