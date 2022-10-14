@@ -179,13 +179,19 @@ function processo2(floatnos,varargin)
           doxy  =  ncdox{'DOXY'}(:);
           
           %retrieving the calibration coeffs.
-          stc  =  stcoeff(1).optode2; % could be many optodes.sgl working on geto2sensor to solve the issue.         
+          coeffs  =  stcoeff(1).optode2; % could be many optodes.sgl working on geto2sensor to solve the issue.         
           maskctdS = S == 99999; % as defined in the .nc file
           mask = ~(maskctdS)';
           
           %computing doxy 
           doxy_calc = [];
-          doxy_calc = phase2doxy(bphasedoxy,rphasedoxy,P,T,S(mask),stc).doxy;
+          %set up the map of variables required for the oxy calc
+          keys = {'PRES','TEMP','PSAL','BPHASE_DOXY', 'RPHASE_DOXY'};
+          values = {P,T,S,bphasedoxy, rphasedoxy};
+          variables = containers.Map(keys, values);
+          %call the appropriate oxy eqn
+          doxy_calc = DOXY_201_202_202(variables, coeffs).compute_parameter();
+          %doxy_calc = phase2doxy(bphasedoxy,rphasedoxy,P,T,S(mask),stc).doxy;
           
           %difference between the computed and doxy in netcdf
           if ~isempty(doxy)

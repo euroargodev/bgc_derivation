@@ -56,7 +56,7 @@ classdef (Abstract) Derivation
             %  data is the underlying array for the supplied variable.
             %
             
-            self.coeffs(name) = data;
+            [self.coeffs(:).name] =data;
         end
         
         function add_netcdf(self, nc)
