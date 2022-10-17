@@ -21,10 +21,12 @@ classdef DOXY_201_201_301 < DOXY_X_X_301
             % Any adjustments or transformations applied to source data
             % to meet expectations of the underlying eqaution should happen
             % here.
-            
-            % Compute desired output value(s)
-            doxy = self.equation(molar_doxy,pres,temp,psal, self.coeffs);
-            
+            if isempty(self.coeffs) 
+                error('Error: calibration coefficients not set');
+            else
+                % Compute desired output value(s)
+                doxy = self.equation(molar_doxy,pres,temp,psal, self.coeffs);
+            end
             % Any subsequent adjustments or transformations for consistency
             % should happen here.
             

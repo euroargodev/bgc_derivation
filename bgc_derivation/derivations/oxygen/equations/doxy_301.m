@@ -18,9 +18,7 @@
 %        obj.doxy [umol/kg] 
 %
 function doxy=doxy_301(molar_doxy,pres,temp,psal,coeffs)
-  if ~exist('coeffs') 
-    error('Error: calibration coefficients not set');
-  else
+  
     % set coefficients
     coeffNames=fieldnames(coeffs);
     for i=1:numel(coeffNames)
@@ -40,7 +38,6 @@ function doxy=doxy_301(molar_doxy,pres,temp,psal,coeffs)
         error(' Cannot compute Doxy as there are some coeff missing');
     end
     doxy=doxycalc(molar_doxy,pres, temp, psal, coeffs);
-  end
 end
 
 % calculate DOXY from MOLAR_DOXY

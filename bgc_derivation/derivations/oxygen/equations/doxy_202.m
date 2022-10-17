@@ -15,30 +15,26 @@
 % equation 7.2.12 case 201_202_202
 %
 function doxy=doxy_202(bphase, rphase, pres, temp, psal,coeffs)
-    if ~exist('coeffs') 
-        error('Error: calibration coefficients not set');
-      else
-       % set coefficients
-       %get only the tab coeff (without C01- c43)
-       matrix = gentabmatrix(coeffs);
-       [coeffs(:).tabCoef]= matrix;
-        for  ii  =  0:4
-          for jj  =  0:3
-            fieldname_toremove  =  sprintf('c%d%d',ii,jj);
-            coeffs  =  rmfield(coeffs,fieldname_toremove);
-          end
-        end 
-        % set coefficients
-        coeffNames=fieldnames(coeffs);
-        for i=1:numel(coeffNames) -1
-          eval(['coeffs.' coeffNames{i} '=' num2str(coeffs.(coeffNames{i}),12) ';']);
-        end
-        %set the Sref to 0
-        [coeffs(:).Sref]= 0;
-        % calculate DOXY
-        doxy=doxycalc(bphase,rphase, pres, temp, psal, coeffs);
+   % set coefficients
+   %get only the tab coeff (without C01- c43)
+   matrix = gentabmatrix(coeffs);
+   [coeffs(:).tabCoef]= matrix;
+    for  ii  =  0:4
+      for jj  =  0:3
+        fieldname_toremove  =  sprintf('c%d%d',ii,jj);
+        coeffs  =  rmfield(coeffs,fieldname_toremove);
       end
+    end 
+    % set coefficients
+    coeffNames=fieldnames(coeffs);
+    for i=1:numel(coeffNames) -1
+      eval(['coeffs.' coeffNames{i} '=' num2str(coeffs.(coeffNames{i}),12) ';']);
     end
+    %set the Sref to 0
+    [coeffs(:).Sref]= 0;
+    % calculate DOXY
+    doxy=doxycalc(bphase,rphase, pres, temp, psal, coeffs);
+end
 
 
 %generate a matrix of certain coeff

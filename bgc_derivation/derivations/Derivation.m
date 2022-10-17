@@ -23,13 +23,13 @@ classdef (Abstract) Derivation
             
             self.default_glob = '**/*.nc';
             
-			switch nargin
-        		case 2
+            switch nargin
+                case 2
             		self.variables = variables;
 					self.coeffs = coeffs;
-        		case 1
+                case 1
             		self.variables = variables;
-        		otherwise
+                otherwise
             		self.variables = containers.Map;
     		end
 
@@ -56,7 +56,7 @@ classdef (Abstract) Derivation
             %  data is the underlying array for the supplied variable.
             %
             
-            [self.coeffs(:).name] =data;
+            [self.coeffs(:).name] = data;
         end
         
         function add_netcdf(self, nc)
