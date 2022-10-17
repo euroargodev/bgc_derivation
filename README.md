@@ -82,9 +82,35 @@ Where:
 - scale is the scale factor coefficient
 - betasw is the seawater contribution to backscattering coefficient
 
-### Oxygen - Not implemented
-Oxygen processing is currently not implemented.
-
+### Dissolved Oxygen - mdoxy2doxy, phase2doxy
+```matlab
+doxy=mdoxy2doxy(molar_doxy,pres,temp,psal,coeffs);
+doxy=phase2doxy(bphase,rphase,pres,temp,psal,coeffs);
+```
+Where:
+- molar_doxy is the sensor output dissolved oxygen concentration
+- rphase, bphase is the input phase data
+- pres is the pressure measurement values from CTD 
+- temp is the temperature measurement values from CTD
+- psal is the salinity measurement values from CTD
+- coeffs is a structure to hold the predeployment cablibration coefficients
+        
+        Required coeff's for 
+        mdoxy2doxy:
+            Sref, Spreset,
+            Pcoef2, Pcoef3,
+            B0, B1, B2, B3,
+            C0,
+            D0, D1, D2, D3
+         phase2doxy:
+            Sref,Spreset,
+            Pcoef1, Pcoef2, Pcoef3,
+            B0, B1, B2, B3,
+            C0,
+            D0, D1, D2, D3,
+            PhaseCoef0, PhaseCoef1, PhaseCoef2, PhaseCoef3,
+            tabCoef
+   
 ### Nitrate - nitcalc.m
 The nitcalc function is invoked as:
 ```matlab
