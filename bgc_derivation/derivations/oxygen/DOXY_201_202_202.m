@@ -25,7 +25,7 @@ classdef DOXY_201_202_202 < DOXY_X_X_202
 
 		            
             % Compute desired output value(s)
-            doxy = self.equation(bphasedoxy, rphasedoxy, pres, temp, psal, self.coeffs);
+            doxy = self.equation(bphasedoxy, rphasedoxy, pres, temp, psal,self.coeffs );
             
             % Any subsequent adjustments or transformations for consistency
             % should happen here.
