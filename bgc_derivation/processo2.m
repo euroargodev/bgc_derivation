@@ -156,12 +156,18 @@ function processo2(floatnos,varargin)
           %fillval_ctd = ncreadatt(pathctd{ii},'PSAL','_FillValue');
 
           % doxy computation
-          doxy_calc = mdoxy2doxy(molar_doxy,P,T,S,coeffs);
+          %set up the map of variables required for the oxy calc
+          keys = {'PRES','TEMP','PSAL','MOLAR_DOXY'};
+          values = {P,T,S, molar_doxy};
+          variables = containers.Map(keys, values);
+          %call the appropriate oxy eqn
+          doxy_calc = DOXY_201_201_301(variables, coeffs).compute_parameter();
+          %doxy_calc = mdoxy2doxy(molar_doxy,P,T,S,coeffs);
         
           % difference between doxy and calculated doxy, test 1st column
           if ~isempty(doxy)
-            diff = (abs(doxy(1,:)-doxy_calc.doxy(1,:)))';
-            accuracy = (doxy(1,:) ./ doxy_calc.doxy(1,:)) * 100;
+            diff = (abs(doxy(1,:)-doxy_calc(1,:)))';
+            accuracy = (doxy(1,:) ./ doxy_calc(1,:)) * 100;
             min_diff = min((diff));
             max_diff = max((diff));
 
