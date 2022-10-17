@@ -23,7 +23,7 @@ classdef DOXY_201_201_301 < DOXY_X_X_301
             % here.
             
             % Compute desired output value(s)
-            doxy = self.equation(molar_doxy,pres,temp,psal);
+            doxy = self.equation(molar_doxy,pres,temp,psal, self.coeffs);
             
             % Any subsequent adjustments or transformations for consistency
             % should happen here.
