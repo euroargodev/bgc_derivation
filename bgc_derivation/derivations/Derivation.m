@@ -46,8 +46,8 @@ classdef (Abstract) Derivation
             
             self.variables(name) = data;
         end
-
-		function add_data_coeff(self, name, data)
+        
+        function add_data_coeff(self, name, data)
             % Add a single coeff by name.
             %
             % derivation.add_add_data_coeff(name, data)
