@@ -1,4 +1,4 @@
-classdef (Abstract) Derivation
+classdef (Abstract) Derivation < handle
     % Abstract class providing common functionality for derived parameters.
     
     % title - s Derivation vr - 1.0 author - bodc/matcaz date - 20221108
@@ -56,7 +56,11 @@ classdef (Abstract) Derivation
             %  data is the underlying array for the supplied variable.
             %
             
-            [self.coeffs(:).name] = data;
+            self.coeffs.(name) = data;
+        end
+        
+        function add_data_coeffs(self, coeffs)
+            self.coeffs = coeffs;
         end
         
         function add_netcdf(self, nc)
