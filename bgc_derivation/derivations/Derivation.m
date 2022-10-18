@@ -5,29 +5,36 @@ classdef (Abstract) Derivation
     
     properties
         variables;  % Variables extracted from source data
+		coeffs;  % predeployment coeffs 
         default_glob;  % Default glob pattern used for selecting data files
     end
     properties (Abstract, Constant = true)
         equation;  % Underlying equation function
     end
     methods
-        function self = Derivation(variables)
+        function self = Derivation(variables, coeffs)
             % Constructor for Derivation objects. Accepts a pre-configured
             % Map of variables or can use add_ methods to ingest data.
             %
-            % derivation = Derivation([variables])
+            % derivation = Derivation([variables, coeffs ])
             % where
             %  variables is a pre-populated name-value Map of variables.
             %
             
             self.default_glob = '**/*.nc';
             
-            if nargin == 1
-                self.variables = variables;
-            else
-                self.variables = containers.Map;
-            end
+            switch nargin
+                case 2
+                    self.variables = variables;
+                    self.coeffs = coeffs;
+                case 1
+                    self.variables = variables;
+                otherwise
+                    self.variables = containers.Map;
+    		end
+
         end
+
         function add_data(self, name, data)
             % Add a single data variable by name.
             %
@@ -38,6 +45,18 @@ classdef (Abstract) Derivation
             %
             
             self.variables(name) = data;
+        end
+        
+        function add_data_coeff(self, name, data)
+            % Add a single coeff by name.
+            %
+            % derivation.add_add_data_coeff(name, data)
+            % where
+            %  name is the name of the supplied variable.
+            %  data is the underlying array for the supplied variable.
+            %
+            
+            [self.coeffs(:).name] = data;
         end
         
         function add_netcdf(self, nc)

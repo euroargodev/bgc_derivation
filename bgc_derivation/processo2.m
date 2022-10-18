@@ -156,12 +156,18 @@ function processo2(floatnos,varargin)
           %fillval_ctd = ncreadatt(pathctd{ii},'PSAL','_FillValue');
 
           % doxy computation
-          doxy_calc = mdoxy2doxy(molar_doxy,P,T,S,coeffs);
+          %set up the map of variables required for the oxy calc
+          keys = {'PRES','TEMP','PSAL','MOLAR_DOXY'};
+          values = {P,T,S, molar_doxy};
+          variables = containers.Map(keys, values);
+          %call the appropriate oxy eqn
+          doxy_calc = DOXY_201_201_301(variables, coeffs).compute_parameter();
+          %doxy_calc = mdoxy2doxy(molar_doxy,P,T,S,coeffs);
         
           % difference between doxy and calculated doxy, test 1st column
           if ~isempty(doxy)
-            diff = (abs(doxy(1,:)-doxy_calc.doxy(1,:)))';
-            accuracy = (doxy(1,:) ./ doxy_calc.doxy(1,:)) * 100;
+            diff = (abs(doxy(1,:)-doxy_calc(1,:)))';
+            accuracy = (doxy(1,:) ./ doxy_calc(1,:)) * 100;
             min_diff = min((diff));
             max_diff = max((diff));
 
@@ -179,13 +185,19 @@ function processo2(floatnos,varargin)
           doxy  =  ncdox{'DOXY'}(:);
           
           %retrieving the calibration coeffs.
-          stc  =  stcoeff(1).optode2; % could be many optodes.sgl working on geto2sensor to solve the issue.         
+          coeffs  =  stcoeff(1).optode2; % could be many optodes.sgl working on geto2sensor to solve the issue.         
           maskctdS = S == 99999; % as defined in the .nc file
           mask = ~(maskctdS)';
           
           %computing doxy 
           doxy_calc = [];
-          doxy_calc = phase2doxy(bphasedoxy,rphasedoxy,P,T,S(mask),stc).doxy;
+          %set up the map of variables required for the oxy calc
+          keys = {'PRES','TEMP','PSAL','BPHASE_DOXY', 'RPHASE_DOXY'};
+          values = {P,T,S,bphasedoxy, rphasedoxy};
+          variables = containers.Map(keys, values);
+          %call the appropriate oxy eqn
+          doxy_calc = DOXY_201_202_202(variables, coeffs).compute_parameter();
+          %doxy_calc = phase2doxy(bphasedoxy,rphasedoxy,P,T,S(mask),stc).doxy;
           
           %difference between the computed and doxy in netcdf
           if ~isempty(doxy)
