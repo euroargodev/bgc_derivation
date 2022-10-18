@@ -25,12 +25,12 @@ classdef (Abstract) Derivation
             
             switch nargin
                 case 2
-            		self.variables = variables;
-					self.coeffs = coeffs;
+                    self.variables = variables;
+                    self.coeffs = coeffs;
                 case 1
-            		self.variables = variables;
+                    self.variables = variables;
                 otherwise
-            		self.variables = containers.Map;
+                    self.variables = containers.Map;
     		end
 
         end
