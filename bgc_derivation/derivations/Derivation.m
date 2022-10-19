@@ -1,4 +1,4 @@
-classdef (Abstract) Derivation
+classdef (Abstract) Derivation < handle
     % Abstract class providing common functionality for derived parameters.
     
     % title - s Derivation vr - 1.0 author - bodc/matcaz date - 20221108
