@@ -18,11 +18,11 @@
 % equation 7.2.12 case 201_202_202
 %
 function doxy=doxy_202(bphase, rphase, pres, temp, psal,coeffs)
-    %setting the Spreset = 0
-    [coeffs.Spreset]= 0;
-    %get only the tab coeff (without C01- c43)
-    matrix = gentabmatrix(coeffs);
-    [coeffs(:).tabCoef]= matrix;
+   % set coefficients
+   coeffs.Spreset = 0;
+   %get only the tab coeff (without C01- c43)
+   matrix = gentabmatrix(coeffs);
+   [coeffs(:).tabCoef]= matrix;
     for  ii  =  0:4
       for jj  =  0:3
         fieldname_toremove  =  sprintf('OptodeCalibrationC%dCoef%d',ii,jj);
@@ -34,7 +34,8 @@ function doxy=doxy_202(bphase, rphase, pres, temp, psal,coeffs)
     for i=1:numel(coeffNames) -1
       eval(['coeffs.' coeffNames{i} '=' num2str(coeffs.(coeffNames{i}),12) ';']);
     end
-   
+    %set the Sref to 0
+    [coeffs(:).Sref]= 0;
     % calculate DOXY
     doxy=doxycalc(bphase,rphase, pres, temp, psal, coeffs);
 end
@@ -67,10 +68,10 @@ end
 % calculate pH2O
 function ph2o=ph2ocalc(temp,salin)
     %SCOR WG (SCOR Working Group 142 on "Quality Control Procedures for Oxygen and Other Biogeochemical Sensors on Floats and Gliders" [RD13]
-    D0 = 24.4543
-    D1 = -67.4509
-    D2 = -4.8489
-    D3 = -5.44E-4
+    D0 = 24.4543;
+    D1 = -67.4509;
+    D2 = -4.8489;
+    D3 = -5.44E-4;
     ph2o=1013.25*exp(D0+D1*(100./(temp+273.15))+ ...
                     D2*log((temp+273.15)./100)+D3*salin);
 end
@@ -100,10 +101,8 @@ end
 
  % calculate molardoxy 
 function molar_doxy=molardoxycalc(dPhaseDoxy, pres, temp, coeffs)
-    % BPhase / TCPhase has been corrected for the pressure effect
+     % BPhase / TCPhase has been corrected for the pressure effect
     Pcoef1 = 0.1; % fixed constant
-
-
     phasePcorr = dPhaseDoxy + Pcoef1.* pres/1000;
     DPhase = coeffs.OptodeCalibrationPhaseCoef0+ coeffs.OptodeCalibrationPhaseCoef1*phasePcorr + coeffs.OptodeCalibrationPhaseCoef2*phasePcorr.^2 + coeffs.OptodeCalibrationPhaseCoef3*phasePcorr.^3;
     for idCoef = 1:5
@@ -127,7 +126,7 @@ function doxy=doxycalc(bphase,rphase,pres,temp,psal, coeffs)
     rho=(sigma0+1000)/1000;
 
     % compute doxy [umol/kg]
-    oxy=molardoxycalc(dphase,pres,temp, coeffs).*salcorrcalc(psal,temp, coeffs).*prescorrcalc(pres,temp);
+    oxy=molardoxycalc(dphase,pres,temp, coeffs).*salcorrcalc(psal,temp, coeffs).*prescorrcalc(pres,temp );
     doxy=oxy./rho';
 end
 
