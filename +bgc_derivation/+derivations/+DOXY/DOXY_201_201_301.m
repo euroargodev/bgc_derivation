@@ -1,4 +1,4 @@
-classdef DOXY_201_201_301 < DOXY_X_X_301
+classdef DOXY_201_201_301 < bgc_derivation.derivations.DOXY.DOXY_X_X_301
     % Derivation class for case 201_201_301.
     % This class is an EXAMPLE and is not for actual usage.
     %
