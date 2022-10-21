@@ -114,6 +114,9 @@ end
 
 % calculate DOXY from  Phase
 function doxy=doxycalc(bphase,rphase,pres,temp,psal, coeffs)
+    import bgc_derivation.derivations.common.tetai
+    import bgc_derivation.derivations.common.swstat90
+    
     %compute the rphase
     if isempty(rphase), rphase =0; end
 

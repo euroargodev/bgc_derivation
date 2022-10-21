@@ -1,4 +1,4 @@
-classdef DOXY_201_202_202 < DOXY_X_X_202
+classdef DOXY_201_202_202 < bgc_derivation.derivations.DOXY.DOXY_X_X_202
     % Derivation class for case 201_202_202.
     
     
@@ -14,6 +14,8 @@ classdef DOXY_201_202_202 < DOXY_X_X_202
             %
             % derivation.compute_parameter()
             %
+            
+            import bgc_derivation.utils.force_row
             
             % Fetch all required parameters from source data/metdata
             pres = self.variables.p;
