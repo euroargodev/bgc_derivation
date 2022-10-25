@@ -1,3 +1,3 @@
-[submodule "bgc_derivation/submodules/gibbs_seawater"]
-	path = bgc_derivation/submodules/gibbs_seawater
-	url = https://github.com/TEOS-10/GSW-Matlab
+[submodule "+bgc_derivation/submodules/gibbs_seawater"]
+	path = +bgc_derivation/submodules/gibbs_seawater
+	url = https://github.com/TEOS-10/GSW-Matlab.git
